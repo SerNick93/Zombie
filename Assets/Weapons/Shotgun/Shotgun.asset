@@ -22,3 +22,7 @@ MonoBehaviour:
   ammoObject: {fileID: 7453258753186828660, guid: d6a0b32d90949ef4e9f66629c38a3678,
     type: 3}
   currentAmountInClip: 1000
+  topDownImage: {fileID: 8061845412082019929, guid: 33a28582fb218d74992502b5256bbab9,
+    type: 3}
+  sideViewImage: {fileID: 5578125031060721876, guid: 82ac083069666a344ad0826c647d5e55,
+    type: 3}

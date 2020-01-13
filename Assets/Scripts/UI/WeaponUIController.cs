@@ -49,16 +49,17 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     /// <param name="ActiveGun"></param>
     public void SetWeaponActive(Gun ActiveGun)
     {
+        Debug.Log("Setting Weapon Active");
+        FireGun.MyInstance.SetDirectionGunImage(PlayerMovement.MyInstance.FacingDirection);
         if (activeWeapon.sprite == null)
         {
             gunInventoryImages[0].sprite = ActiveGun.GunImage;
             gunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(ActiveGun));
             activeWeaponButton.onClick.AddListener(() => turnOnWeaponUI());
-            FireGun.MyInstance.SetDirectionGunImage(PlayerMovement.MyInstance.FacingDirection);
-            
         }
         activeWeapon.sprite = ActiveGun.GunImage;
-            
+        
+
         foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
         {
             if (ActiveGun.AmmoType == ammo.AmmoObjectPrefab)

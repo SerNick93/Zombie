@@ -37,10 +37,13 @@ public class FireGun : MonoBehaviour
     {
         Physics2D.IgnoreCollision(bulletPrefab.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
         gun = GetComponent<GameObject>();
-        
-
     }
 
+    /// <summary>
+    /// Fire the weapon
+    /// Instantiate bulley at the correct position, following the rotation of angle, which is the mouse cursor
+    /// Check to see if the gun is out of ammo.
+    /// </summary>
     public void FireWeapon()
     {
         if (WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip > 0)
@@ -145,8 +148,10 @@ public class FireGun : MonoBehaviour
 
         gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].rotation = Quaternion.Euler(0, 0, angle + 90);
     }
+    //Set the correct image of the gun, depending on which way the player is facing.
     public void SetDirectionGunImage(int firePoint)
     {
+        Debug.Log(firePoint);
         if (WeaponUIController.MyInstance.ThisIsTheActiveGun != null)
         {
             if (gun != null)
@@ -154,7 +159,8 @@ public class FireGun : MonoBehaviour
                 Destroy(gun.gameObject);
                 Debug.Log("Destroying Gun");
             }
-            Debug.Log("Reinstantiating gun in: " + " " + firePoint);
+
+            
             if (firePoint == 1 || firePoint == 3)
             {
                 if (firePoint == 1)
@@ -169,16 +175,15 @@ public class FireGun : MonoBehaviour
             }
             else
             gun = Instantiate(WeaponUIController.MyInstance.ThisIsTheActiveGun.TopDownImage, gunPivotPoints[firePoint]);
+            Debug.Log("Reinstantiating gun in: " + " " + firePoint);
 
-  
-
+            //Search for the correct firepoint
             foreach (Transform childTransforms in transform.GetComponentsInChildren<Transform>())
             {
                 foreach (Transform grandChildTransforms in childTransforms.GetComponentsInChildren<Transform>())
                 {
                     if (grandChildTransforms.name == "FP_" + firePoint)
                     {
-                        Debug.Log(grandChildTransforms.name + " " + grandChildTransforms.childCount);
                         foreach (Transform greatGrandChildTransforms in grandChildTransforms.GetComponentsInChildren<Transform>())
                         {
                             //Thyis needs to get the firepoint from inside of the top down gun transform.

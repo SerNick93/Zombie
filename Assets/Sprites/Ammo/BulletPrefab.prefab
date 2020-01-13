@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 511296677958256907}
   - component: {fileID: 4654538128782281216}
   - component: {fileID: 1997388991750739046}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: BulletPrefab
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -143,3 +143,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7456e0943f9af13409f270c62d18e7f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lifetime: 0

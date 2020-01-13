@@ -38,11 +38,10 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Physics2D.IgnoreLayerCollision(8, 0);
+       Physics2D.IgnoreLayerCollision(9, 8);
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        
     }
 
     // Update is called once per frame

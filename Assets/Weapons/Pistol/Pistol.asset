@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4e65274e97a3c41a21233234453c49, type: 3}
+  m_Name: Pistol
+  m_EditorClassIdentifier: 
+  gunName: Pistol
+  gunImage: {fileID: -7767105433804115491, guid: 7b0f3a62a069dc248927c7ee542a399b,
+    type: 3}
+  fireRate: 1
+  clipSize: 9
+  gunPrefab: {fileID: 1287536755492512805, guid: 1d8969f175f7c9a4f957b98b82cdb0e6,
+    type: 3}
+  gunAccuracy: 5
+  ammoObject: {fileID: -6357698232824597111, guid: ce79e771b9f80914480dc0fd83fbc7a6,
+    type: 3}
+  currentAmountInClip: 985

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class WeaponUIController : MonoBehaviour, IPointerClickHandler
+public class WeaponUIController : MonoBehaviour
 {
     public static WeaponUIController myInstance { get; set; }
     public static WeaponUIController MyInstance
@@ -24,6 +24,7 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     public Gun ThisIsTheActiveGun { get => ThisIsTheActiveGun1; set => ThisIsTheActiveGun1 = value; }
     public AmmoType AmmoGlobal { get => ammoGlobal; set => ammoGlobal = value; }
     public Gun ThisIsTheActiveGun1 { get => thisIsTheActiveGun; set => thisIsTheActiveGun = value; }
+    public Image[] GunInventoryImages { get => gunInventoryImages; set => gunInventoryImages = value; }
 
     [SerializeField]
     private Image activeWeapon;
@@ -37,6 +38,10 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     private Button[] gunInventoryButtons;
     [SerializeField]
     private Button activeWeaponButton;
+    [SerializeField]
+    private GameObject rightClickMenu;
+    [SerializeField]
+    private Transform canvasParent;
 
     private bool isUIOn = false;
     private bool isFiring = false;
@@ -50,22 +55,21 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     public void SetWeaponActive(Gun ActiveGun)
     {
         Debug.Log("Setting Weapon Active");
-        FireGun.MyInstance.SetDirectionGunImage(PlayerMovement.MyInstance.FacingDirection);
         if (activeWeapon.sprite == null)
         {
-            gunInventoryImages[0].sprite = ActiveGun.GunImage;
+            FireGun.MyInstance.SetDirectionGunImage(PlayerMovement.MyInstance.FacingDirection);
+            GunInventoryImages[0].sprite = ActiveGun.GunImage;
             gunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(ActiveGun));
             activeWeaponButton.onClick.AddListener(() => turnOnWeaponUI());
         }
         activeWeapon.sprite = ActiveGun.GunImage;
-        
+
 
         foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
         {
             if (ActiveGun.AmmoType == ammo.AmmoObjectPrefab)
             {
                 AmmoGlobal = ammo;
-                //CurrentAmmo = ammoGlobal.CurrentAmmoAmount;
                 UpdateAmmoUI(ActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
                 ThisIsTheActiveGun = ActiveGun;
             }
@@ -78,13 +82,17 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     /// <param name="addedGun"></param>
     public void AddWeaponToInventory(Gun addedGun)
     {
-        for (int i = 0; i < gunInventoryImages.Length; i++)
+        Debug.Log("Adding Weapon to Inventory");
+        for (int i = 0; i < GunInventoryImages.Length; i++)
         {
-            if (gunInventoryImages[i].sprite == null)
+            if (GunInventoryImages[i].sprite == null)
             {
-                gunInventoryImages[i].sprite = addedGun.GunImage;
-                gunInventoryButtons[i].onClick.AddListener(() => SetWeaponActive(addedGun));
-                return;
+                if (GunInventoryImages[i].sprite != addedGun.GunImage)
+                {
+                    GunInventoryImages[i].sprite = addedGun.GunImage;
+                    gunInventoryButtons[i].onClick.AddListener(() => SetWeaponActive(addedGun));
+                    return;
+                }
             }
         }
     }
@@ -114,6 +122,7 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     /// <param name="currentAmmoAmount"></param>
     public void UpdateAmmoUI(int currentAmountInClip, int currentAmmoAmount)
     {
+        Debug.Log("Updating Ammo Count");
         ammoText.text = currentAmountInClip + "/" + currentAmmoAmount;
     }
 
@@ -139,11 +148,10 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
                 ReloadWeapon();
             }
         }
-    }
 
-    void Shoot()
-    {
-        
+
+
+
     }
 
     /// <summary>
@@ -151,6 +159,7 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public void ReloadWeapon()
     {
+        Debug.Log("Reloading Weapon");
         int reloadAmount = 0;
         reloadAmount = ThisIsTheActiveGun.ClipSize - ThisIsTheActiveGun.CurrentAmountInClip;
         ThisIsTheActiveGun.CurrentAmountInClip += reloadAmount;
@@ -158,12 +167,38 @@ public class WeaponUIController : MonoBehaviour, IPointerClickHandler
         UpdateAmmoUI(ThisIsTheActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void GunInventFull(Gun addedGun)
     {
-        ((IPointerClickHandler)activeWeaponButton).OnPointerClick(eventData);
+        Debug.Log("You inventory is full.");
+    }
+    public void HasWeapon(Gun addedGun)
+    {
+        foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
+        {
+            if (addedGun.AmmoType == ammo.AmmoObjectPrefab)
+            {
+                int addonAmount = Random.Range(5, addedGun.ClipSize);
 
-
+                ammo.CurrentAmmoAmount += addonAmount;
+                if (addedGun.GunName == ThisIsTheActiveGun.GunName)
+                {
+                    UpdateAmmoUI(ThisIsTheActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
+                }
+                Debug.Log("Added: "+ addonAmount +  " ammo to: " + addedGun.GunName + " " + addedGun.AmmoType);
+            }
+        }
     }
 
+    public void RightClickMenu()
+    {
+        Debug.Log("Right Click menu");
+        Instantiate(rightClickMenu, parent, Quaternion.Euler(0, 0, 0), canvasParent);
 
+    }
 }
+
+
+
+
+
+

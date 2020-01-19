@@ -14,21 +14,39 @@ public class WeaponController : MonoBehaviour
         if (collision.tag == "Player")
         {
             UIController.MyInstance.GunPickup(gunData);
+
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (WeaponUIController.MyInstance.ActiveWeapon.sprite == null)
                 {
-
                     WeaponUIController.MyInstance.SetWeaponActive(gunData);
-                    UIController.MyInstance.turnOffInteractions();
-                    Destroy(gameObject);
+                    exitInteraction();
+                    return;
                 }
+
                 else
                 {
-                    WeaponUIController.MyInstance.AddWeaponToInventory(gunData);
-                    UIController.MyInstance.turnOffInteractions();
+                    for (int i = 0; i < WeaponUIController.MyInstance.GunInventoryImages.Length; i++)
+                    {
+                        if (WeaponUIController.MyInstance.GunInventoryImages[i].sprite == gunData.GunImage)
+                        {
+                            WeaponUIController.MyInstance.HasWeapon(gunData);
+                            exitInteraction();
+                            return;
 
-                    Destroy(gameObject);
+                        }
+                        else if (WeaponUIController.MyInstance.GunInventoryImages[i].sprite == null)
+                        {
+                            WeaponUIController.MyInstance.AddWeaponToInventory(gunData);
+                            exitInteraction();
+                            return;
+                        }
+                        
+                        if (WeaponUIController.MyInstance.GunInventoryImages[i].sprite != null)
+                        {
+                            WeaponUIController.MyInstance.GunInventFull(gunData);
+                        }
+                    }
                 }
             }
         }
@@ -37,5 +55,9 @@ public class WeaponController : MonoBehaviour
     {
         UIController.MyInstance.turnOffInteractions();
     }
-
+    public void exitInteraction()
+    {
+        UIController.MyInstance.turnOffInteractions();
+        Destroy(gameObject);
+    }
 }

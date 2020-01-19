@@ -151,13 +151,13 @@ public class FireGun : MonoBehaviour
     //Set the correct image of the gun, depending on which way the player is facing.
     public void SetDirectionGunImage(int firePoint)
     {
-        Debug.Log(firePoint);
+        //Debug.Log(firePoint);
         if (WeaponUIController.MyInstance.ThisIsTheActiveGun != null)
         {
             if (gun != null)
             {
                 Destroy(gun.gameObject);
-                Debug.Log("Destroying Gun");
+                //Debug.Log("Destroying Gun");
             }
 
             
@@ -175,7 +175,7 @@ public class FireGun : MonoBehaviour
             }
             else
             gun = Instantiate(WeaponUIController.MyInstance.ThisIsTheActiveGun.TopDownImage, gunPivotPoints[firePoint]);
-            Debug.Log("Reinstantiating gun in: " + " " + firePoint);
+            //Debug.Log("Reinstantiating gun in: " + " " + firePoint);
 
             //Search for the correct firepoint
             foreach (Transform childTransforms in transform.GetComponentsInChildren<Transform>())

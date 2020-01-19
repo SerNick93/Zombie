@@ -16,13 +16,13 @@ MonoBehaviour:
   gunImage: {fileID: -3294788082675926453, guid: 503d983c414b52d4884fa73f9c82f987,
     type: 3}
   fireRate: 2
-  clipSize: 0
+  clipSize: 14
   gunPrefab: {fileID: 6867066165566118209, guid: 113a07d0625a5de40922e01341d3e3a0,
     type: 3}
   gunAccuracy: 2
   ammoObject: {fileID: -1999795041021436259, guid: ed284d895731a8b41859e76e5255b4c8,
     type: 3}
-  currentAmountInClip: 9174
+  currentAmountInClip: 14
   topDownImage: {fileID: 3545278540800856642, guid: 99926f3b008594f4c9740bb399414ebe,
     type: 3}
   sideViewImage: {fileID: 8201305319238588471, guid: c665e0af06112dc498f3d367cc954d16,

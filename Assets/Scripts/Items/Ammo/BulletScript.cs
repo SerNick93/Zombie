@@ -18,7 +18,7 @@ public class BulletScript : MonoBehaviour
     {
         if (collision.otherCollider.tag != "Bullet" || collision.otherCollider.tag != "Player")
         {
-            Debug.Log(collision.otherCollider.tag);
+
             Destroy(gameObject);
         }
         Destroy(gameObject);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GunInventUI : MonoBehaviour, IPointerClickHandler
+public class GunInventUI : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 {
 
     public void OnPointerClick(PointerEventData eventData)
@@ -17,5 +17,15 @@ public class GunInventUI : MonoBehaviour, IPointerClickHandler
             WeaponUIController.MyInstance.RightClickMenu();
             
         }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            Debug.Log(EventSystem.current.name);
+        }
+        WeaponUIController.MyInstance.CloseRightClickMenu();
+
     }
 }

@@ -39,9 +39,10 @@ public class WeaponUIController : MonoBehaviour
     [SerializeField]
     private Button activeWeaponButton;
     [SerializeField]
-    private GameObject rightClickMenu;
+    private GameObject rightClickMenu, rightClickInstance;
     [SerializeField]
     private Transform canvasParent;
+    bool rightClickMenuOn = false;
 
     private bool isUIOn = false;
     private bool isFiring = false;
@@ -148,10 +149,6 @@ public class WeaponUIController : MonoBehaviour
                 ReloadWeapon();
             }
         }
-
-
-
-
     }
 
     /// <summary>
@@ -189,11 +186,25 @@ public class WeaponUIController : MonoBehaviour
         }
     }
 
+    //The rightclick menu needs to not be destroyed when leaving the bounds of the gun image.
+    //Right now it will be disabled when you try and click on one of the buttons
+    //because of how the exit handler works for the mouse events.
     public void RightClickMenu()
     {
         Debug.Log("Right Click menu");
-        Instantiate(rightClickMenu, parent, Quaternion.Euler(0, 0, 0), canvasParent);
-
+        if (!rightClickMenuOn)
+        {
+            rightClickInstance = Instantiate(rightClickMenu, Input.mousePosition, Quaternion.identity, canvasParent) as GameObject;
+            rightClickMenuOn = true;
+        }
+    }
+    public void CloseRightClickMenu()
+    {
+        if(rightClickMenuOn)
+        {
+            Destroy(rightClickInstance);
+            rightClickMenuOn = false;
+        }
     }
 }
 

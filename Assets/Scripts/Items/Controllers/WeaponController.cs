@@ -9,7 +9,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField]
     private Gun gunData;
 
-    public void OnTriggerStay2D(Collider2D collision)
+    public void OnTriggerStay(Collider collision)
     {
         if (collision.tag == "Player")
         {
@@ -51,7 +51,7 @@ public class WeaponController : MonoBehaviour
             }
         }
     }
-    public void OnTriggerExit2D(Collider2D collision)
+    public void OnTriggerExit(Collider collision)
     {
         UIController.MyInstance.turnOffInteractions();
     }

@@ -6,20 +6,20 @@ using UnityEngine.UI;
 public class FireGun : MonoBehaviour
 {
     [SerializeField]
-    private Transform[] gunPivotPoints;
-    private SpriteRenderer topDownGunImage;
+    private Transform gunPivotPoints;
     [SerializeField]
     private GameObject bulletPrefab;
     [SerializeField]
     private float bulletForce; //Speed of bullet
-    Rigidbody2D rb;
+    Rigidbody rb;
     GameObject bullet;
-    float angle;
-    private Vector3 bulletDirection;
-    Quaternion facingRotation;
     [SerializeField]
-    GameObject gun;
+    GameObject gun, gunInstance;
+    [SerializeField]
+    Camera mainCam;
     Transform gunFirePoint;
+    [SerializeField]
+    private ParticleSystem muzzleFlash;
     public static FireGun myInstance { get; set; }
     public static FireGun MyInstance
     {
@@ -35,7 +35,6 @@ public class FireGun : MonoBehaviour
 
     private void Start()
     {
-        Physics2D.IgnoreCollision(bulletPrefab.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
         gun = GetComponent<GameObject>();
     }
 
@@ -48,21 +47,18 @@ public class FireGun : MonoBehaviour
     {
         if (WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip > 0)
         {
-            GameObject bullet = Instantiate(bulletPrefab, gunFirePoint.position, 
-            gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].rotation = Quaternion.Euler(0,0,angle + 90 + Random.Range(-5f, 5f)));
+            RaycastHit hit;
+            muzzleFlash.Play();
+            if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit))
+            {
+                
+            }
 
-
-            //Addforce in the correct direction.
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
-            rb.AddForce(gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].up * -bulletForce, ForceMode2D.Impulse);
-            
-
-            WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip -= 
+            WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip -=
                WeaponUIController.MyInstance.ThisIsTheActiveGun.FireRate;
 
             WeaponUIController.MyInstance.UpdateAmmoUI
-                (WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip, 
+                (WeaponUIController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip,
                 WeaponUIController.MyInstance.AmmoGlobal.CurrentAmmoAmount);
         }
 
@@ -74,151 +70,52 @@ public class FireGun : MonoBehaviour
             //TODO: DISPLAY A "YOU ARE OUT OF AMMO" TOOLTIP. 
         }
     }
-
-
-    void FixedUpdate()
+    public void InstantiateGun(Gun activeGun)
     {
-                #region
-        Vector3 mouseOnScreen = (Vector3)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        mouseOnScreen.y = mouseOnScreen.y - gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].position.y;
-        mouseOnScreen.x = mouseOnScreen.x - gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].position.x;
-
-        angle = Mathf.Atan2(mouseOnScreen.y, mouseOnScreen.x) * Mathf.Rad2Deg;
-
-        //Clamp the player firing within range of where the player is looking.
-        //E.g. Down: Fires within -135deg and -45deg.
-        //If the mouse strays out of those bounds, then it will snap to the outisde bound it just left.
-
-        //DOWN
-        if (PlayerMovement.MyInstance.FacingDirection == 0)
+        Debug.Log(activeGun);
+        if (!gunInstance)
         {
-            if (angle < -135)
-            {
-                angle = -135;
-            }
-            else if (angle > -45)
-            {
-                angle = -45;
-            }
+            gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);
+            gunInstance.GetComponent<SphereCollider>().enabled = false;
+            getFirePoint();
         }
-
-
-        //LEFT
-        if (PlayerMovement.MyInstance.FacingDirection == 1)
+        else
         {
+            Destroy(gunInstance);
+            gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);
+            gunInstance.GetComponent<SphereCollider>().enabled = false;
+            WeaponUIController.MyInstance.turnOnWeaponUI();
+            getFirePoint();
 
-            if (angle < 135 && angle > -135)
-            {
-                angle = 135;
-                return;
 
-                if (angle > -135)
-                {
-                    angle = -135;
-                }
-            }
         }
-    //UP
-        if (PlayerMovement.MyInstance.FacingDirection == 2)
-        {
-
-            if (angle > 135)
-            {
-                angle = 135;
-            }
-            else if (angle < 45)
-            {
-                angle = 45;
-            }
-        }
-        //RIGHT
-        if (PlayerMovement.MyInstance.FacingDirection == 3)
-        {
-            if (angle < -45)
-            {
-                angle = -45;
-            }
-            else if (angle > 45)
-            {
-                angle = 45;
-            }
-        }
-        #endregion     
-
-        gunPivotPoints[PlayerMovement.MyInstance.FacingDirection].rotation = Quaternion.Euler(0, 0, angle + 90);
     }
-    //Set the correct image of the gun, depending on which way the player is facing.
-    public void SetDirectionGunImage(int firePoint)
+    public void getFirePoint()
     {
-        //Debug.Log(firePoint);
-        if (WeaponUIController.MyInstance.ThisIsTheActiveGun != null)
+        foreach (Transform parentTransform in transform.GetComponentInChildren<Transform>())
         {
-            if (gun != null)
+            foreach (Transform childTransform in parentTransform.GetComponentInChildren<Transform>())
             {
-                Destroy(gun.gameObject);
-                //Debug.Log("Destroying Gun");
-            }
-
-            
-            if (firePoint == 1 || firePoint == 3)
-            {
-                if (firePoint == 1)
+                foreach (Transform grandChildTransform in childTransform)
                 {
-                    gun = Instantiate(WeaponUIController.MyInstance.ThisIsTheActiveGun.SideViewImage, gunPivotPoints[firePoint]);
-
-                    gun.GetComponent<SpriteRenderer>().flipY = true;
-
-                }
-                else 
-                    gun = Instantiate(WeaponUIController.MyInstance.ThisIsTheActiveGun.SideViewImage, gunPivotPoints[firePoint]);
-            }
-            else
-            gun = Instantiate(WeaponUIController.MyInstance.ThisIsTheActiveGun.TopDownImage, gunPivotPoints[firePoint]);
-            //Debug.Log("Reinstantiating gun in: " + " " + firePoint);
-
-            //Search for the correct firepoint
-            foreach (Transform childTransforms in transform.GetComponentsInChildren<Transform>())
-            {
-                foreach (Transform grandChildTransforms in childTransforms.GetComponentsInChildren<Transform>())
-                {
-                    if (grandChildTransforms.name == "FP_" + firePoint)
+                    foreach (Transform greatGrandChildTransform in grandChildTransform.GetComponentInChildren<Transform>())
                     {
-                        foreach (Transform greatGrandChildTransforms in grandChildTransforms.GetComponentsInChildren<Transform>())
+                        Debug.Log(greatGrandChildTransform.name);
+                        if (greatGrandChildTransform.tag == "FirePoint")
                         {
-                            //Thyis needs to get the firepoint from inside of the top down gun transform.
-                            if (greatGrandChildTransforms.tag == "FirePoint")
-                            {
-                                gunFirePoint = greatGrandChildTransforms.GetComponent<Transform>();
-                                gunFirePoint.transform.position = greatGrandChildTransforms.position;
+                            muzzleFlash = greatGrandChildTransform.GetComponent<ParticleSystem>();
+                            muzzleFlash.transform.position = greatGrandChildTransform.position;
+                            Debug.Log(gunFirePoint);
 
-                                if (firePoint == 2 || firePoint == 1)
-                                {
-                                    gun.GetComponent<SpriteRenderer>().sortingOrder = 1;
-                                }
-                                else
-                                {
-                                    gun.GetComponent<SpriteRenderer>().sortingOrder = 3;
-                                }
-                                if (firePoint == 3 || firePoint == 1)
-                                {
-                                    gun.GetComponent<SpriteRenderer>().sprite = WeaponUIController.MyInstance.ThisIsTheActiveGun.SideViewImage.GetComponent<SpriteRenderer>().sprite;
-                                   
-                                }
-                                else
-                                {
-                                    gun.GetComponent<SpriteRenderer>().sprite = WeaponUIController.MyInstance.ThisIsTheActiveGun.TopDownImage.GetComponent<SpriteRenderer>().sprite;
-
-                                }
-                            }
                         }
-
                     }
                 }
             }
-
-
         }
+
     }
+
+    //Set the correct image of the gun, depending on which way the player is facing.
+
 }
 

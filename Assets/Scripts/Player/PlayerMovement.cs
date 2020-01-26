@@ -19,89 +19,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public int FacingDirection { get => facingDirection; set => facingDirection = value; }
-    public Quaternion BulletOrientation { get => bulletOrientation; set => bulletOrientation = value; }
-
-    Rigidbody2D rb;
+    private CharacterController controller;
     [SerializeField]
-    private float movementSpeed = 25;
-    private Animator animator;
-    private Vector2 direction;
+    private float moveSpeed = 12f;
+    Vector3 velocity;
     [SerializeField]
-    private TextMeshProUGUI pickupText;
+    private float gravity = -9.81f;
     [SerializeField]
-    private int facingDirection = 0;
-    private Quaternion bulletOrientation; //the orientation of the bullet prefab
+    private Transform groundCheck;
     [SerializeField]
-    Transform bullet;
-
-    // Start is called before the first frame update
-    void Start()
+    private float groundDistance = 0.4f;
+    [SerializeField]
+    private LayerMask groundMask;
+    bool isGrounded;
+    [SerializeField]
+    float jumpHeight;
+     private void Start()
     {
-       Physics2D.IgnoreLayerCollision(9, 8);
-
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        Move();
+        controller = GetComponent<CharacterController>();
     }
     private void Update()
     {
-        //This will not work on a touch device.
-        //the player's facing direction will need to be found another way. 
-        if (Input.GetKeyDown(KeyCode.A))
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        if (isGrounded && velocity.y < 0)
         {
-            facingDirection = 1;
-            FireGun.MyInstance.SetDirectionGunImage(facingDirection);
-            //bulletOrientation = Quaternion.Euler(0, 0, 90);
+            velocity.y = -2f;
         }
-        if (Input.GetKeyDown(KeyCode.S))
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * moveSpeed * Time.deltaTime);
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            facingDirection = 0;
-            FireGun.MyInstance.SetDirectionGunImage(facingDirection);
-
-            //bulletOrientation = Quaternion.Euler(180, 0, 0);
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            facingDirection = 3;
-            FireGun.MyInstance.SetDirectionGunImage(facingDirection);
-
-            //bulletOrientation = Quaternion.Euler(0, 0, -90);
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            facingDirection = 2;
-            FireGun.MyInstance.SetDirectionGunImage(facingDirection);
-
-            //bulletOrientation = Quaternion.Euler(0, 0, 0);
-        }
-    }
-
-
-    public void Move()
-    {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
-        Vector3 tempVector = new Vector3(h, v, 0);
-
-        tempVector = tempVector * movementSpeed * Time.deltaTime;
-
-        rb.MovePosition(rb.transform.position + tempVector * movementSpeed * Time.fixedDeltaTime);
-        Animate(tempVector);
-
-    }
-
-    public void Animate(Vector3 Direction)
-    {
-        animator.SetFloat("x", Direction.x);
-        animator.SetFloat("y", Direction.y);
-
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
     }
 
 }

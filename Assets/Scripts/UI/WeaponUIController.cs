@@ -58,13 +58,13 @@ public class WeaponUIController : MonoBehaviour
         Debug.Log("Setting Weapon Active");
         if (activeWeapon.sprite == null)
         {
-            FireGun.MyInstance.SetDirectionGunImage(PlayerMovement.MyInstance.FacingDirection);
             GunInventoryImages[0].sprite = ActiveGun.GunImage;
             gunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(ActiveGun));
             activeWeaponButton.onClick.AddListener(() => turnOnWeaponUI());
+            
         }
+        FireGun.MyInstance.InstantiateGun(ActiveGun);
         activeWeapon.sprite = ActiveGun.GunImage;
-
 
         foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
         {
@@ -108,12 +108,14 @@ public class WeaponUIController : MonoBehaviour
             cg.alpha = 1;
             cg.blocksRaycasts = true;
             isUIOn = true;
+            Cursor.lockState = CursorLockMode.None;
         }
         else if (isUIOn)
         {
             cg.alpha = 0;
             cg.blocksRaycasts = false;
             isUIOn = false;
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
     /// <summary>
@@ -138,6 +140,7 @@ public class WeaponUIController : MonoBehaviour
             }
             if (Input.GetButtonDown("Fire1") && isUIOn == false)
             {
+                //TODO: Correct the firerate of the weapons. Holding down the mouse button does not work.
                 FireGun.MyInstance.FireWeapon();
             }
             if (Input.GetButtonUp("Fire1"))

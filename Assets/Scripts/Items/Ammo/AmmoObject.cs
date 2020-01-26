@@ -16,7 +16,7 @@ public class AmmoObject : MonoBehaviour
     /// Collision detecton for ammo. 
     /// </summary>
     /// <param name="collision"></param>
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerStay(Collider collision)
     {
         if (collision.tag == "Player")
         {
@@ -29,7 +29,7 @@ public class AmmoObject : MonoBehaviour
             }
         }
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit(Collider collision)
     {
         UIController.MyInstance.turnOffInteractions();
     }
@@ -48,7 +48,13 @@ public class AmmoObject : MonoBehaviour
                 {
                     Destroy(gameObject);
                     ammo.CurrentAmmoAmount += bundleAmount;
+                    if (WeaponUIController.MyInstance.ThisIsTheActiveGun == null)
+                    {
+                        Debug.Log("You have no active weapon, but the ammo has been picked up anyway");
+                        UIController.MyInstance.turnOffInteractions();
+                        return;
 
+                    }
                     if (ammo.AmmoObjectPrefab == WeaponUIController.MyInstance.ThisIsTheActiveGun.AmmoType)
                     {
                         Debug.Log(ammo.AmmoObjectPrefab);
@@ -57,8 +63,7 @@ public class AmmoObject : MonoBehaviour
                         UIController.MyInstance.turnOffInteractions();
 
                     }
-                    else
-                     return;
+
                 }
             }
         }

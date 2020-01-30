@@ -5,16 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class DoorController : MonoBehaviour
 {
-    [SerializeField]
-    private string sceneName;
+    
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerStay(Collider collision)
     {
+        UIController.MyInstance.DoorInteraction();
         if (collision.tag == "Player" && Input.GetKeyDown(KeyCode.E))
         {
             //Do you want to go into the next room?
             //Has the player pressed the interaction button?
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+            gameObject.SetActive(false);
+            UIController.MyInstance.turnOffInteractions();
+
         }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        UIController.MyInstance.turnOffInteractions();
+        gameObject.SetActive(true);
+
     }
 }

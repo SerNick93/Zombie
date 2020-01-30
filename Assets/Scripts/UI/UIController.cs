@@ -30,7 +30,7 @@ public class UIController : MonoBehaviour
     }
     public void DoorInteraction()
     {
-        interactionText.text = "Press E to continue " + "Door" + ".";
+        interactionText.text = "Press E to go through the " + "Door" + ".";
     }
 
 

@@ -15,11 +15,11 @@ MonoBehaviour:
   gunName: Assault Rifle
   gunImage: {fileID: -3294788082675926453, guid: 503d983c414b52d4884fa73f9c82f987,
     type: 3}
-  fireRate: 2
+  fireRate: 0.1
   clipSize: 14
-  gunPrefab: {fileID: 1461852843312090425, guid: 079990d6481f2c24aa1de71457ce382b,
-    type: 3}
+  gunPrefab: {fileID: 22823569855202327, guid: 079990d6481f2c24aa1de71457ce382b, type: 3}
   gunAccuracy: 2
   ammoObject: {fileID: 4859966136885951367, guid: d34031718773b3c4191ac6caaffd4d99,
     type: 3}
-  currentAmountInClip: 958
+  currentAmountInClip: 489
+  damage: 1

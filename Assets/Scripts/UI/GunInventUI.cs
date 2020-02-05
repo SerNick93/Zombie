@@ -5,27 +5,20 @@ using UnityEngine.EventSystems;
 
 public class GunInventUI : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 {
-
+    /// <summary>
+    /// Drops the weapon you are hovering over on a right click.
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            //Open Menu when right clicking on the buttons for the weapon UI.
-            //Only when there is a weapon active there.
-            //Menu needs to spawn at the menu pivot, where the mouse pointer is. 
-
-            WeaponUIController.MyInstance.RightClickMenu();
-            
+            WeaponController.MyInstance.DropWeapon();
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            Debug.Log(EventSystem.current.name);
-        }
-        WeaponUIController.MyInstance.CloseRightClickMenu();
 
     }
 }

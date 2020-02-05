@@ -17,39 +17,18 @@ public class CameraFollow : MonoBehaviour
             return myInstance;
         }
     }
-    #region
-    //[SerializeField]
-    //private Vector3 offset;
-    //[SerializeField]
-    //private PlayerMovement playerController;
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-    //    offset = transform.position - Player.transform.position;
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    transform.position = playerController.transform.position + offset;
-    //}
-    #endregion
-
-
     [SerializeField]
     private Transform Player;
-
 
     [SerializeField]
     private float mouseSensitivity;
     private float xRotation = 0f;
 
-
-
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
+
     private void Update()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

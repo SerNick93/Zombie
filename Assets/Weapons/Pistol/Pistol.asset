@@ -15,11 +15,11 @@ MonoBehaviour:
   gunName: Pistol
   gunImage: {fileID: -7767105433804115491, guid: 7b0f3a62a069dc248927c7ee542a399b,
     type: 3}
-  fireRate: 1
+  fireRate: 0.7
   clipSize: 9
   gunPrefab: {fileID: 8364077542769908598, guid: fae9d04d78e3d3946908fd28e473926d,
     type: 3}
   gunAccuracy: 5
   ammoObject: {fileID: -5113700317538054415, guid: 17f56a81ec59d3d4c85b571d04f7d65d,
     type: 3}
-  currentAmountInClip: 4
+  currentAmountInClip: 1

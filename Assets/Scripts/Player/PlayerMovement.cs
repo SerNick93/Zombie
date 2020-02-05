@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public Transform GroundCheck { get => groundCheck; set => groundCheck = value; }
+
     private CharacterController controller;
     [SerializeField]
     private float moveSpeed = 12f;
@@ -40,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isGrounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;

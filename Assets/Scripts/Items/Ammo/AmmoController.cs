@@ -16,11 +16,6 @@ public class AmmoController : MonoBehaviour
             return myInstance;
         }
     }
-
-   public void Awake()
-    {
-        DontDestroyOnLoad(transform.gameObject);
-    }
     public List<AmmoType> AmmoTypes { get => ammoTypes; set => ammoTypes = value; }
 
     [SerializeField]

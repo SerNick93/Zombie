@@ -13,7 +13,7 @@ public class Gun : ScriptableObject
     [SerializeField]
     private Sprite gunImage;
     [SerializeField]
-    private int fireRate;
+    private float fireRate;
     [SerializeField]
     private int clipSize;
     [SerializeField]
@@ -24,14 +24,17 @@ public class Gun : ScriptableObject
     private AmmoObject ammoObject;
     [SerializeField]
     private int currentAmountInClip;
+    [SerializeField]
+    private float damage;
 
 
     public string GunName { get => gunName; set => gunName = value; }
     public Sprite GunImage { get => gunImage; set => gunImage = value; }
-    public int FireRate { get => fireRate; set => fireRate = value; }
+    public float FireRate { get => fireRate; set => fireRate = value; }
     public int ClipSize { get => clipSize; set => clipSize = value; }
     public GameObject GunPrefab { get => gunPrefab; set => gunPrefab = value; }
     public int GunAccuracy { get => gunAccuracy; set => gunAccuracy = value; }
     public AmmoObject AmmoType { get => ammoObject; set => ammoObject = value; }
     public int CurrentAmountInClip { get => currentAmountInClip; set => currentAmountInClip = value; }
+    public float Damage { get => damage; set => damage = value; }
 }

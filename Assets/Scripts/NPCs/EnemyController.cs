@@ -23,7 +23,7 @@ public class EnemyController : MonoBehaviour
 
         if (health > 0)
         {
-            Debug.Log("Enemy has taken: " + damage + ".");
+            Debug.Log("Enemy has taken: " + damage + " damage.");
             health -= damage;
         }
        else if (health <= 0)

@@ -26,6 +26,7 @@ public class WeaponController : MonoBehaviour
     public Gun ThisIsTheActiveGun1 { get => thisIsTheActiveGun; set => thisIsTheActiveGun = value; }
     public Image[] GunInventoryImages { get => gunInventoryImages; set => gunInventoryImages = value; }
     public Button[] GunInventoryButtons { get => gunInventoryButtons; set => gunInventoryButtons = value; }
+    public bool IsUIOn { get => isUIOn; set => isUIOn = value; }
 
     [SerializeField]
     private Image activeWeapon;
@@ -51,6 +52,40 @@ public class WeaponController : MonoBehaviour
     AmmoType ammoGlobal;
     Gun thisIsTheActiveGun;
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            turnOnWeaponUI();
+            //if (Time.timeScale == 1)
+            //{
+            //    Time.timeScale = 0;
+            //}
+            //else if (Time.timeScale == 0)
+            //{
+            //    Time.timeScale = 1; 
+            //}
+        }
+
+        if (ThisIsTheActiveGun != null)
+        {
+            if (Input.GetButton("Fire1") && IsUIOn == false && Time.time > nextFire)
+            {
+                Shoot();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R) && IsUIOn == false)
+            {
+                ReloadWeapon();
+            }
+
+            if (Input.GetKeyDown(KeyCode.M) && IsUIOn == false)
+            {
+                UnequipWeapon();
+            }
+        }
+    }
 
     /// <summary>
     /// For use when dropping and unequiping weapons.
@@ -61,6 +96,7 @@ public class WeaponController : MonoBehaviour
     {
         GunInventoryImages[0].sprite = FirstActiveGun.GunImage;
         GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+        gunList.Add(FirstActiveGun);
         SetWeaponActive(FirstActiveGun);
     }
     /// <summary>
@@ -80,7 +116,7 @@ public class WeaponController : MonoBehaviour
         activeWeapon.sprite = ActiveGun.GunImage;
         activeWeapon.GetComponent<Image>().enabled = true;
         activeWeaponButton.GetComponent<Button>().enabled = true;
-        gunList.Add(ActiveGun);
+        
 
         foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
         {
@@ -109,8 +145,6 @@ public class WeaponController : MonoBehaviour
                     gunList.Add(addedGun);
                     GunInventoryImages[i].sprite = addedGun.GunImage;
                     GunInventoryButtons[i].onClick.AddListener(() => SetWeaponActive(addedGun));
-
-                    
                     return;
                 }
             }
@@ -122,19 +156,21 @@ public class WeaponController : MonoBehaviour
     /// </summary>
     public void turnOnWeaponUI()
     {
-        if (!isUIOn)
+        if (!IsUIOn)
         {
             cg.alpha = 1;
             cg.blocksRaycasts = true;
-            isUIOn = true;
-            Cursor.lockState = CursorLockMode.None;
+            IsUIOn = true;
+            UIController.MyInstance.TurnCursorOn();
         }
-        else if (isUIOn)
+        else if (IsUIOn)
         {
             cg.alpha = 0;
             cg.blocksRaycasts = false;
-            isUIOn = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            IsUIOn = false;
+            UIController.MyInstance.TurnCursorOff();
+
+
         }
     }
 
@@ -145,36 +181,9 @@ public class WeaponController : MonoBehaviour
     /// <param name="currentAmmoAmount"></param>
     public void UpdateAmmoUI(int currentAmountInClip, int currentAmmoAmount)
     {
-        Debug.Log("Updating Ammo Count");
         ammoText.text = currentAmountInClip + "/" + currentAmmoAmount;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            turnOnWeaponUI();
-        }
-
-        if (ThisIsTheActiveGun != null)
-        {
-            if (Input.GetButton("Fire1") && isUIOn == false && Time.time > nextFire)
-            {
-                Shoot();
-            }
-
-            if (Input.GetKeyDown(KeyCode.R) && isUIOn == false)
-            {
-                ReloadWeapon();
-            }
-
-            if (Input.GetKeyDown(KeyCode.M) && isUIOn == false)
-            {
-                UnequipWeapon();
-            }
-        }
-    }
     //Shoots the gun.
     public void Shoot()
     {
@@ -238,35 +247,36 @@ public class WeaponController : MonoBehaviour
     /// <summary>
     /// Drops the weapon on the floor below you. 
     /// </summary>
-    public void DropWeapon()
+    public void DropWeapon(string name)
     {
         //Take all of the invent spaces for weapons
         for (int i = 0; i < gunInventoryImages.Length; i++)
         {
+            Debug.Log(i);
             //If there is a gun sprite in that space
             if (gunInventoryImages[i].sprite != null)
             {
-                //then foreach gun in the invent list
-                foreach (Gun gun in gunList)
+                //if the spaces's sprite name matches a gun in the inventory
+                if (gunInventoryImages[i].sprite.name == name)
                 {
-                    //if the spaces's sprite name matches a gun in the inventory
-                    if (gunInventoryImages[i].sprite.name == gun.GunImage.name)
+                    foreach (Gun gun in gunList)
                     {
-                        //remove the gun. 
-                        gunInventoryImages[i].sprite = null;
-                        gunInventoryButtons[i].onClick.RemoveAllListeners();
-                        gunList.Remove(gun);
-                        Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position, Quaternion.Euler(90, 0, 0), gameWorld);
-
-                        if (ThisIsTheActiveGun.GunName == gun.GunName)
+                        if (gun.GunImage.name == gunInventoryImages[i].sprite.name)
                         {
-                            UnequipWeapon();
+                            if (ThisIsTheActiveGun != null && name == ThisIsTheActiveGun.GunImage.name)
+                            {
+                                UnequipWeapon();
+                            }
+                            gunInventoryImages[i].sprite = null;
+                            gunInventoryButtons[i].onClick.RemoveAllListeners();
+                            Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position, Quaternion.Euler(90, 0, 0), gameWorld);
+                            gunList.Remove(gun);
+                            Debug.Log("Dropping: " + gun.GunName);
+                            return;
                         }
-                        return;
                     }
                 }
-            }
-                
+            }   
         }       
     }
     /// <summary>
@@ -281,7 +291,6 @@ public class WeaponController : MonoBehaviour
 
         ammoText.text = null;
         ThisIsTheActiveGun = null;
-
     }
 
 }

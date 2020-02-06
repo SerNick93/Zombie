@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class GunInventUI : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
+public class GunInventUI : MonoBehaviour, IPointerClickHandler
 {
     /// <summary>
     /// Drops the weapon you are hovering over on a right click.
@@ -13,12 +14,8 @@ public class GunInventUI : MonoBehaviour, IPointerClickHandler, IPointerExitHand
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            WeaponController.MyInstance.DropWeapon();
+            WeaponController.MyInstance.DropWeapon(GetComponent<Image>().sprite.name);
         }
     }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-
-    }
 }

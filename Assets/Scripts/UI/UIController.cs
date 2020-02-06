@@ -19,7 +19,6 @@ public class UIController : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI interactionText;
-
     public void GunPickup(Gun gun)
     {
         interactionText.text = "Press E to pickup the " + gun.GunName + ".";
@@ -32,13 +31,27 @@ public class UIController : MonoBehaviour
     {
         interactionText.text = "Press E to go through the " + "Door" + ".";
     }
-
-
     public void turnOffInteractions()
     {
         if (interactionText.text != null)
         {
             interactionText.text = "";
         }
+    }
+    public void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+    }
+    public void TurnCursorOff()
+    {   
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+    public void TurnCursorOn()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }

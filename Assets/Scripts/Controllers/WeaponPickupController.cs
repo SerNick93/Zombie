@@ -16,7 +16,7 @@ public class WeaponPickupController : MonoBehaviour
             //UI Element
             UIController.MyInstance.GunPickup(gunData);
 
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKey(KeyCode.E))
             {
                 //Will only run when picking up a weapon for the first time.
                 if (WeaponController.MyInstance.ActiveWeapon.sprite == null && WeaponController.MyInstance.GunInventoryImages[0].sprite == null)

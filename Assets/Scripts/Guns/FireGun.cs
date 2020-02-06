@@ -60,7 +60,7 @@ public class FireGun : MonoBehaviour
     }
     public void InstantiateGun(Gun activeGun)
     {
-        Debug.Log(activeGun);
+        Debug.Log("Instantiating: "+ activeGun);
         if (!gunInstance)
         {
             gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);

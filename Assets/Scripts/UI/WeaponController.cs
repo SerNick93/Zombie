@@ -84,6 +84,7 @@ public class WeaponController : MonoBehaviour
             {
                 UnequipWeapon();
             }
+
         }
     }
 
@@ -256,19 +257,24 @@ public class WeaponController : MonoBehaviour
             //If there is a gun sprite in that space
             if (gunInventoryImages[i].sprite != null)
             {
-                //if the spaces's sprite name matches a gun in the inventory
+                //if the spaces's sprite name matches the button you clicked on
                 if (gunInventoryImages[i].sprite.name == name)
                 {
+                    //foreach gun in your current inventory
                     foreach (Gun gun in gunList)
                     {
+                        //does it match the sprite?
                         if (gun.GunImage.name == gunInventoryImages[i].sprite.name)
                         {
+                            //is it the active weapon?
                             if (ThisIsTheActiveGun != null && name == ThisIsTheActiveGun.GunImage.name)
                             {
                                 UnequipWeapon();
                             }
+                            //unassign it from the inventory
                             gunInventoryImages[i].sprite = null;
                             gunInventoryButtons[i].onClick.RemoveAllListeners();
+                            gun.GunPrefab.GetComponent<Animator>().enabled = false;
                             Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position, Quaternion.Euler(90, 0, 0), gameWorld);
                             gunList.Remove(gun);
                             Debug.Log("Dropping: " + gun.GunName);

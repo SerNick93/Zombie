@@ -14,11 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunName: Shotgun
   gunImage: {fileID: 21300000, guid: 6eec4017af7a2f246a36a7f801f05f26, type: 3}
-  fireRate: 1
+  fireRate: 0.2
   clipSize: 2
   gunPrefab: {fileID: 7913830268947618295, guid: f3f74cb148214e5448c828a20ddf5b07,
     type: 3}
-  gunAccuracy: 5
+  gunAccuracy: 0.5
   ammoObject: {fileID: 8556722499577367843, guid: db7fc5e13a2801141ab452a268ed3f90,
     type: 3}
-  currentAmountInClip: 1000
+  currentAmountInClip: 8040
+  damage: 1
+  normalToScope: 0
+  shotgun: 1
+  maxBulletCount: 5

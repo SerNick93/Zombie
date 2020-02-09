@@ -4848,7 +4848,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.00094499893
+  m_Radius: 0.003686605
   m_Center: {x: -0.00010123907, y: -0.00016358694, z: -2.910383e-11}
 --- !u!114 &8364077542769908599
 MonoBehaviour:
@@ -4871,7 +4871,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8364077542769908598}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ae32f9ae90fcde64fb7c07e0c858417e, type: 2}
   m_CullingMode: 0

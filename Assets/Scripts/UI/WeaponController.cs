@@ -52,7 +52,7 @@ public class WeaponController : MonoBehaviour
     Gun thisIsTheActiveGun;
 
     // Update is called once per frame
-    void FixedUpdate()
+    void LateUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -84,10 +84,21 @@ public class WeaponController : MonoBehaviour
     /// This will only run when the first gun os picked up. 
     /// </summary>
     /// <param name="FirstActiveGun"></param>
-    public void SetGunImageZero(Gun FirstActiveGun)
+    public void SetGunImageZero(Gun FirstActiveGun, int slotNumber)
     {
-        GunInventoryImages[0].sprite = FirstActiveGun.GunImage;
-        GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+        switch (slotNumber)
+        {
+            case 0:
+                GunInventoryImages[0].sprite = FirstActiveGun.GunImage;
+                GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+                break;
+            case 1:
+                GunInventoryImages[1].sprite = FirstActiveGun.GunImage;
+                GunInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+                break;
+
+
+        }
         gunList.Add(FirstActiveGun);
         SetWeaponActive(FirstActiveGun);
     }
@@ -98,7 +109,7 @@ public class WeaponController : MonoBehaviour
 
     public void SetWeaponActive(Gun ActiveGun)
     {
-        Debug.Log("Setting Weapon Active");
+        Debug.Log("Setting "+ ActiveGun.GunName + " Active");
         if (activeWeapon.sprite == null)
         {
             activeWeaponButton.onClick.AddListener(() => turnOnWeaponUI());
@@ -125,22 +136,24 @@ public class WeaponController : MonoBehaviour
     /// If there is already an active weapon, this will run. 
     /// </summary>
     /// <param name="addedGun"></param>
-    public void AddWeaponToInventory(Gun addedGun)
+    public void AddWeaponToInventory(Gun addedGun, int slotNumber)
     {
-        Debug.Log("Adding Weapon to Inventory");
-        for (int i = 0; i < GunInventoryImages.Length; i++)
+        switch (slotNumber)
         {
-            if (GunInventoryImages[i].sprite == null)
-            {
-                if (GunInventoryImages[i].sprite != addedGun.GunImage)
-                {
-                    gunList.Add(addedGun);
-                    GunInventoryImages[i].sprite = addedGun.GunImage;
-                    GunInventoryButtons[i].onClick.AddListener(() => SetWeaponActive(addedGun));
-                    return;
-                }
-            }
+            case 0:
+                gunList.Add(addedGun);
+                GunInventoryImages[0].sprite = addedGun.GunImage;
+                GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(addedGun));
+                break;
+            case 1:
+                gunList.Add(addedGun);
+                GunInventoryImages[1].sprite = addedGun.GunImage;
+                GunInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(addedGun));
+
+                break;
         }
+
+        Debug.Log("Adding " + addedGun.GunName +  " to the Inventory");
     }
 
     /// <summary>
@@ -239,12 +252,11 @@ public class WeaponController : MonoBehaviour
     /// <summary>
     /// Drops the weapon on the floor below you. 
     /// </summary>
-    public void DropWeapon(string name)
+    public void DropWeapon(string name, bool weaponSwap)
     {
         //Take all of the invent spaces for weapons
         for (int i = 0; i < gunInventoryImages.Length; i++)
         {
-            Debug.Log(i);
             //If there is a gun sprite in that space
             if (gunInventoryImages[i].sprite != null)
             {
@@ -258,17 +270,23 @@ public class WeaponController : MonoBehaviour
                         if (gun.GunImage.name == gunInventoryImages[i].sprite.name)
                         {
                             //is it the active weapon?
-                            if (ThisIsTheActiveGun != null && name == ThisIsTheActiveGun.GunImage.name)
+
+                            if (weaponSwap != true)
                             {
-                                UnequipWeapon();
+                                if (ThisIsTheActiveGun != null && name == ThisIsTheActiveGun.GunImage.name)
+                                {
+                                    UnequipWeapon();
+                                }
+                                gunInventoryImages[i].sprite = null;
+                                gunInventoryButtons[i].onClick.RemoveAllListeners();
+
                             }
                             //unassign it from the inventory
-                            gunInventoryImages[i].sprite = null;
-                            gunInventoryButtons[i].onClick.RemoveAllListeners();
                             gun.GunPrefab.GetComponent<Animator>().enabled = false;
-                            Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position, Quaternion.Euler(90, 0, 0), gameWorld);
+                            Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position + new Vector3 (0,0.01f,0), Quaternion.Euler(90,0,0), gameWorld);
+                            Debug.Log(PlayerMovement.MyInstance.GroundCheck.transform.position);
                             gunList.Remove(gun);
-                            Debug.Log("Dropping: " + gun.GunName);
+                            Debug.Log("Dropping " + gun.GunName);
                             return;
                         }
                     }

@@ -14,7 +14,7 @@ public class GunInventUI : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            WeaponController.MyInstance.DropWeapon(GetComponent<Image>().sprite.name);
+            WeaponController.MyInstance.DropWeapon(GetComponent<Image>().sprite.name, false);
         }
     }
 

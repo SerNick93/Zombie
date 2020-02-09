@@ -83,7 +83,6 @@ public class FireGun : MonoBehaviour
             scale /= 2;
             break;
         }
-        Debug.Log(scale);
         //If the gun has spray, like a shotgun, then it will have a max bullet count in its dataobject.
         for (int i = 0; i < Random.Range(1, WeaponController.MyInstance.ThisIsTheActiveGun.MaxBulletCount); i++)
         {
@@ -100,7 +99,7 @@ public class FireGun : MonoBehaviour
                 Debug.DrawLine(mainCam.transform.position, hit.point);
                 if (enemyController)
                 {
-                    enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveGun.Damage);
+                    enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveGun.Damage / hit.distance * 4);
                 }
                 GameObject impact = Instantiate(impactFlash, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 1f);
@@ -114,6 +113,7 @@ public class FireGun : MonoBehaviour
                 (WeaponController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip,
                 WeaponController.MyInstance.AmmoGlobal.CurrentAmmoAmount);
     }
+
     public void InstantiateGun(Gun activeGun)
     {
         Debug.Log("Instantiating: "+ activeGun);
@@ -121,10 +121,9 @@ public class FireGun : MonoBehaviour
         {
             gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);
             gunInstance.GetComponent<SphereCollider>().enabled = false;
-            
             getFirePoint();
         }
-        else
+        else //If you are manually changing the active weapon.
         {
             Destroy(gunInstance);
             gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);

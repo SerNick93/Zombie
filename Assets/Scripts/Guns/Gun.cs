@@ -27,10 +27,12 @@ public class Gun : ScriptableObject
     private int currentAmountInClip;
     [SerializeField]
     private float damage;
-    [SerializeField]
+    [SerializeField][Tooltip("Is the weapon in scope mode?")]
     private bool normalToScope;
-    [SerializeField]
+    [SerializeField][Tooltip("The maximum amount of impacts from one bullet (This is for shotgun spray)")]
     private int maxBulletCount;
+    [SerializeField][Tooltip("If true, weapon is sidearm. If false it is a main weapon.")]
+    private bool sideArm;
 
     public string GunName { get => gunName; set => gunName = value; }
     public Sprite GunImage { get => gunImage; set => gunImage = value; }
@@ -43,5 +45,5 @@ public class Gun : ScriptableObject
     public float Damage { get => damage; set => damage = value; }
     public bool NormalToScope { get => normalToScope; set => normalToScope = value; }
     public int MaxBulletCount { get => maxBulletCount; set => maxBulletCount = value; }
-
+    public bool SideArm { get => sideArm; set => sideArm = value; }
 }

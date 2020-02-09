@@ -21,9 +21,8 @@ public class WeaponController : MonoBehaviour
     }
 
     public Image ActiveWeapon { get => activeWeapon; set => activeWeapon = value; }
-    public Gun ThisIsTheActiveGun { get => ThisIsTheActiveGun1; set => ThisIsTheActiveGun1 = value; }
+    public Gun ThisIsTheActiveGun { get => thisIsTheActiveGun; set => thisIsTheActiveGun = value; }
     public AmmoType AmmoGlobal { get => ammoGlobal; set => ammoGlobal = value; }
-    public Gun ThisIsTheActiveGun1 { get => thisIsTheActiveGun; set => thisIsTheActiveGun = value; }
     public Image[] GunInventoryImages { get => gunInventoryImages; set => gunInventoryImages = value; }
     public Button[] GunInventoryButtons { get => gunInventoryButtons; set => gunInventoryButtons = value; }
     public bool IsUIOn { get => isUIOn; set => isUIOn = value; }
@@ -58,14 +57,6 @@ public class WeaponController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             turnOnWeaponUI();
-            //if (Time.timeScale == 1)
-            //{
-            //    Time.timeScale = 0;
-            //}
-            //else if (Time.timeScale == 0)
-            //{
-            //    Time.timeScale = 1; 
-            //}
         }
 
         if (ThisIsTheActiveGun != null)

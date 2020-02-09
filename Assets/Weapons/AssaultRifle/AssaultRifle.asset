@@ -18,11 +18,10 @@ MonoBehaviour:
   fireRate: 0.1
   clipSize: 14
   gunPrefab: {fileID: 22823569855202327, guid: 079990d6481f2c24aa1de71457ce382b, type: 3}
-  gunAccuracy: 0.2
+  gunAccuracy: 0.5
   ammoObject: {fileID: 4859966136885951367, guid: d34031718773b3c4191ac6caaffd4d99,
     type: 3}
-  currentAmountInClip: 295
+  currentAmountInClip: 9835
   damage: 1
   normalToScope: 0
-  shotgun: 0
   maxBulletCount: 1

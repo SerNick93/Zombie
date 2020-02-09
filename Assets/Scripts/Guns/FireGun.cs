@@ -17,6 +17,7 @@ public class FireGun : MonoBehaviour
     float scale = .5f;
     float z = 10f;
     EnemyController enemyController;
+    RaycastHit hit;
 
     public static FireGun myInstance { get; set; }
     public static FireGun MyInstance
@@ -43,6 +44,7 @@ public class FireGun : MonoBehaviour
             {
                 if (Input.GetMouseButton(1))
                 {
+                    //The scope is now active.
                     if (anim == null)
                     {
                         anim = gunInstance.GetComponent<Animator>();
@@ -52,8 +54,10 @@ public class FireGun : MonoBehaviour
                     anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope);
                     
                 }
+                //The scope is now inactive
                 else if (anim != null)
                 {
+                    
                     WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope = false;
                     anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope);
                     
@@ -72,28 +76,34 @@ public class FireGun : MonoBehaviour
     public void FireWeapon()
     {
         muzzleFlash.Play();
-
+        //While the scope is active.
+        scale = WeaponController.MyInstance.ThisIsTheActiveGun.GunAccuracy;
+        while (WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope)
+        {
+            scale /= 2;
+            break;
+        }
+        Debug.Log(scale);
+        //If the gun has spray, like a shotgun, then it will have a max bullet count in its dataobject.
         for (int i = 0; i < Random.Range(1, WeaponController.MyInstance.ThisIsTheActiveGun.MaxBulletCount); i++)
         {
-            Vector3 offset = Random.insideUnitCircle * WeaponController.MyInstance.ThisIsTheActiveGun.GunAccuracy;
+            //Gun accuracy * the distance to the raycast hit, halved.
+            Vector3 offset = Random.insideUnitCircle * scale * (hit.distance/50);
+            
             offset.z = z;
             offset = mainCam.transform.TransformDirection(offset.normalized);
-
+            
             Ray r = new Ray(mainCam.transform.position, offset);
-            RaycastHit hit;
-
             if (Physics.Raycast(r, out hit))
             {
                 enemyController = hit.transform.GetComponent<EnemyController>();
-
+                Debug.DrawLine(mainCam.transform.position, hit.point);
                 if (enemyController)
                 {
                     enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveGun.Damage);
                 }
-
                 GameObject impact = Instantiate(impactFlash, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 1f);
-
             }
 
         }
@@ -111,7 +121,7 @@ public class FireGun : MonoBehaviour
         {
             gunInstance = Instantiate(activeGun.GunPrefab, gunPivotPoints);
             gunInstance.GetComponent<SphereCollider>().enabled = false;
-            scale = activeGun.GunAccuracy;
+            
             getFirePoint();
         }
         else
@@ -129,22 +139,8 @@ public class FireGun : MonoBehaviour
     {
         Destroy(gunInstance);
     }
-    public void ScopeActive()
-    {
  
-
-    }
-    public void ScopeInactive()
-    {
-        Animator anim = gunInstance.GetComponent<Animator>();
-
-        WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope = false;
-        anim.enabled = false;
-        anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveGun.NormalToScope);
-
-    }
-
-
+    //Gets the firepoint from uner the gun object.
     public void getFirePoint()
     {
         foreach (Transform parentTransform in transform.GetComponentInChildren<Transform>())

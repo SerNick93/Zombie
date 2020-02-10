@@ -99,7 +99,7 @@ public class FireGun : MonoBehaviour
                 Debug.DrawLine(mainCam.transform.position, hit.point);
                 if (enemyController)
                 {
-                    enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveGun.Damage / hit.distance * 4);
+                    enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveGun.Damage / hit.distance * 20);
                 }
                 GameObject impact = Instantiate(impactFlash, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 1f);

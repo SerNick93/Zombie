@@ -20,8 +20,8 @@ MonoBehaviour:
   gunAccuracy: 0.5
   ammoObject: {fileID: 4859966136885951367, guid: d34031718773b3c4191ac6caaffd4d99,
     type: 3}
-  currentAmountInClip: 9707
-  damage: 1
+  currentAmountInClip: 9358
+  damage: 2
   normalToScope: 0
   maxBulletCount: 1
   sideArm: 0

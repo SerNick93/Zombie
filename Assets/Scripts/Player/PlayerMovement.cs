@@ -23,7 +23,11 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
     [SerializeField]
-    private float moveSpeed = 12f;
+    private float moveSpeed = 10f;
+    private float originalMoveSpeed = 6f;
+
+    [SerializeField]
+    private float runSpeed = 20f;
     Vector3 velocity;
     [SerializeField]
     private float gravity = -9.81f;
@@ -36,12 +40,14 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded;
     [SerializeField]
     float jumpHeight;
+    bool isRunning;
      private void Start()
     {
         controller = GetComponent<CharacterController>();
     }
     private void Update()
     {
+        
         isGrounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
@@ -60,6 +66,26 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            Run();
+            isRunning = true;
+        }
+        else
+        {
+            isRunning = false;
+            moveSpeed = originalMoveSpeed;
+        }
+            
+    }
+    public void Run()
+    {  
+        while (isRunning)
+        {
+            moveSpeed = runSpeed;
+            break;
+        }
     }
 
 }

@@ -8,12 +8,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     float health;
     [SerializeField]
-    float lookRaduis = 10f;
+    float lookRaduis = 0.01f;
     Transform target;
     NavMeshAgent agent;
 
 
-
+    #region Pathfinding
     // Start is called before the first frame update
     void Start()
     {
@@ -48,6 +48,8 @@ public class EnemyController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, lookRaduis);
     }
+    #endregion
+
     public void TakeDamage(float damage)
     {
 
@@ -61,5 +63,9 @@ public class EnemyController : MonoBehaviour
             Debug.Log("Enemy has died.");
             Destroy(gameObject);
         }
+    }
+    public void Knockback(float damageValue)
+    {
+        Debug.Log(damageValue);
     }
 }

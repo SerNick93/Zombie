@@ -48,18 +48,18 @@ public class AmmoObject : MonoBehaviour
                 {
                     Destroy(gameObject);
                     ammo.CurrentAmmoAmount += bundleAmount;
-                    if (WeaponController.MyInstance.ThisIsTheActiveGun == null)
+                    if (WeaponController.MyInstance.ThisIsTheActiveWeapon == null)
                     {
                         Debug.Log("You have no active weapon, but the ammo has been picked up anyway");
                         UIController.MyInstance.turnOffInteractions();
                         return;
 
                     }
-                    if (ammo.AmmoObjectPrefab == WeaponController.MyInstance.ThisIsTheActiveGun.AmmoType)
+                    if (ammo.AmmoObjectPrefab == WeaponController.MyInstance.ThisIsTheActiveWeapon.AmmoType)
                     {
                         Debug.Log(ammo.AmmoObjectPrefab);
-                        Debug.Log(WeaponController.MyInstance.ThisIsTheActiveGun.AmmoType);
-                        WeaponController.MyInstance.UpdateAmmoUI(WeaponController.MyInstance.ThisIsTheActiveGun.CurrentAmountInClip, ammo.CurrentAmmoAmount);
+                        Debug.Log(WeaponController.MyInstance.ThisIsTheActiveWeapon.AmmoType);
+                        WeaponController.MyInstance.UpdateAmmoUI(WeaponController.MyInstance.ThisIsTheActiveWeapon.CurrentAmountInClip, ammo.CurrentAmmoAmount);
                         UIController.MyInstance.turnOffInteractions();
 
                     }

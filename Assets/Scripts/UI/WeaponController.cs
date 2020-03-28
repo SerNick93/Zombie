@@ -21,27 +21,29 @@ public class WeaponController : MonoBehaviour
     }
 
     public Image ActiveWeapon { get => activeWeapon; set => activeWeapon = value; }
-    public Gun ThisIsTheActiveGun { get => thisIsTheActiveGun; set => thisIsTheActiveGun = value; }
+    public Weapon ThisIsTheActiveWeapon { get => thisIsTheActiveWeapon; set => thisIsTheActiveWeapon = value; }
     public AmmoType AmmoGlobal { get => ammoGlobal; set => ammoGlobal = value; }
-    public Image[] GunInventoryImages { get => gunInventoryImages; set => gunInventoryImages = value; }
-    public Button[] GunInventoryButtons { get => gunInventoryButtons; set => gunInventoryButtons = value; }
+    public Image[] WeaponInventoryImages { get => weaponInventoryImage; set => weaponInventoryImage = value; }
+    public Button[] WeaponInventoryButtons { get => weaponInventoryButton; set => weaponInventoryButton = value; }
     public bool IsUIOn { get => isUIOn; set => isUIOn = value; }
+    public TextMeshProUGUI AmmoText { get => ammoText; set => ammoText = value; }
 
     [SerializeField]
     private Image activeWeapon;
     [SerializeField]
     private TextMeshProUGUI ammoText;
     [SerializeField]
-    private Image[] gunInventoryImages;
+    private Image[] weaponInventoryImage;
     [SerializeField]
     private CanvasGroup cg;
     [SerializeField]
-    private Button[] gunInventoryButtons;
+    private Button[] weaponInventoryButton;
     [SerializeField]
     private Button activeWeaponButton;
     [SerializeField]
     private Transform canvasParent;
-    private List<Gun> gunList = new List<Gun>();
+    private List<Weapon> weaponList = new List<Weapon>();
+    
     private bool isUIOn = false;
     [SerializeField]
     private Transform gameWorld;
@@ -49,7 +51,7 @@ public class WeaponController : MonoBehaviour
     float nextFire = 0.0f;
 
     AmmoType ammoGlobal;
-    Gun thisIsTheActiveGun;
+    Weapon thisIsTheActiveWeapon;
 
     // Update is called once per frame
     void LateUpdate()
@@ -59,18 +61,19 @@ public class WeaponController : MonoBehaviour
             turnOnWeaponUI();
         }
 
-        if (ThisIsTheActiveGun != null)
+        if (ThisIsTheActiveWeapon != null)
         {
+            if (ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
+            {
+                if (Input.GetKeyDown(KeyCode.R) && IsUIOn == false)
+                {
+                    ReloadWeapon();
+                }
+            }
             if (Input.GetButton("Fire1") && IsUIOn == false && Time.time > nextFire)
             {
                 Shoot();
             }
-
-            if (Input.GetKeyDown(KeyCode.R) && IsUIOn == false)
-            {
-                ReloadWeapon();
-            }
-
             if (Input.GetKeyDown(KeyCode.M) && IsUIOn == false)
             {
                 UnequipWeapon();
@@ -83,77 +86,93 @@ public class WeaponController : MonoBehaviour
     /// For use when dropping and unequiping weapons.
     /// This will only run when the first gun os picked up. 
     /// </summary>
-    /// <param name="FirstActiveGun"></param>
-    public void SetGunImageZero(Gun FirstActiveGun, int slotNumber)
+    /// <param name="FirstActiveWeapon"></param>
+    public void SetGunImageZero(Weapon FirstActiveWeapon, int slotNumber)
     {
         switch (slotNumber)
         {
             case 0:
-                GunInventoryImages[0].sprite = FirstActiveGun.GunImage;
-                GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+                WeaponInventoryImages[0].sprite = FirstActiveWeapon.WeaponImage;
+                WeaponInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(FirstActiveWeapon));
                 break;
             case 1:
-                GunInventoryImages[1].sprite = FirstActiveGun.GunImage;
-                GunInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(FirstActiveGun));
+                WeaponInventoryImages[1].sprite = FirstActiveWeapon.WeaponImage;
+                WeaponInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(FirstActiveWeapon));
+                break;
+            case 2:
+                WeaponInventoryImages[2].sprite = FirstActiveWeapon.WeaponImage;
+                WeaponInventoryButtons[2].onClick.AddListener(() => SetWeaponActive(FirstActiveWeapon));
+
                 break;
 
 
         }
-        gunList.Add(FirstActiveGun);
-        SetWeaponActive(FirstActiveGun);
+        weaponList.Add(FirstActiveWeapon);
+        SetWeaponActive(FirstActiveWeapon);
     }
+
+
+
     /// <summary>
     /// Set weapon active.
     /// </summary>
-    /// <param name="ActiveGun"></param>
+    /// <param name="ActiveWeapon"></param>
 
-    public void SetWeaponActive(Gun ActiveGun)
+    public void SetWeaponActive(Weapon ActiveWeapon)
     {
-        Debug.Log("Setting "+ ActiveGun.GunName + " Active");
+        Debug.Log("Setting "+ ActiveWeapon.WeaponName + " Active");
         if (activeWeapon.sprite == null)
         {
             activeWeaponButton.onClick.AddListener(() => turnOnWeaponUI());
         }
 
-        FireGun.MyInstance.InstantiateGun(ActiveGun);
-        activeWeapon.sprite = ActiveGun.GunImage;
+        ActivateWeapons.MyInstance.InstantiateWeapon(ActiveWeapon);
+        activeWeapon.sprite = ActiveWeapon.WeaponImage;
         activeWeapon.GetComponent<Image>().enabled = true;
         activeWeaponButton.GetComponent<Button>().enabled = true;
-        
-
-        foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
+        ThisIsTheActiveWeapon = ActiveWeapon;
+        //If the weapon is a gun.
+        if (ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
         {
-            if (ActiveGun.AmmoType == ammo.AmmoObjectPrefab)
+            foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
             {
-                AmmoGlobal = ammo;
-                UpdateAmmoUI(ActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
-                ThisIsTheActiveGun = ActiveGun;
+                if (ThisIsTheActiveWeapon.AmmoType == ammo.AmmoObjectPrefab)
+                {
+                    AmmoGlobal = ammo;
+                    UpdateAmmoUI(ThisIsTheActiveWeapon.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount); 
+                }
             }
         }
-
+        
     }
+
     /// <summary>
     /// If there is already an active weapon, this will run. 
     /// </summary>
-    /// <param name="addedGun"></param>
-    public void AddWeaponToInventory(Gun addedGun, int slotNumber)
+    /// <param name="addedWeapon"></param>
+    public void AddWeaponToInventory(Weapon addedWeapon, int slotNumber)
     {
         switch (slotNumber)
         {
             case 0:
-                gunList.Add(addedGun);
-                GunInventoryImages[0].sprite = addedGun.GunImage;
-                GunInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(addedGun));
+                weaponList.Add(addedWeapon);
+                WeaponInventoryImages[0].sprite = addedWeapon.WeaponImage;
+                WeaponInventoryButtons[0].onClick.AddListener(() => SetWeaponActive(addedWeapon));
                 break;
             case 1:
-                gunList.Add(addedGun);
-                GunInventoryImages[1].sprite = addedGun.GunImage;
-                GunInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(addedGun));
-
+                weaponList.Add(addedWeapon);
+                WeaponInventoryImages[1].sprite = addedWeapon.WeaponImage;
+                WeaponInventoryButtons[1].onClick.AddListener(() => SetWeaponActive(addedWeapon));
                 break;
+            case 2:
+                weaponList.Add(addedWeapon);
+                WeaponInventoryImages[2].sprite = addedWeapon.WeaponImage;
+                WeaponInventoryButtons[2].onClick.AddListener(() => SetWeaponActive(addedWeapon));
+                break;
+
         }
 
-        Debug.Log("Adding " + addedGun.GunName +  " to the Inventory");
+        Debug.Log("Adding " + addedWeapon.WeaponName +  " to the Inventory");
     }
 
     /// <summary>
@@ -186,23 +205,33 @@ public class WeaponController : MonoBehaviour
     /// <param name="currentAmmoAmount"></param>
     public void UpdateAmmoUI(int currentAmountInClip, int currentAmmoAmount)
     {
-        ammoText.text = currentAmountInClip + "/" + currentAmmoAmount;
+        if (ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
+        {
+            AmmoText.text = currentAmountInClip + "/" + currentAmmoAmount;
+        }
     }
 
     //Shoots the gun.
     public void Shoot()
     {
-        if (ThisIsTheActiveGun.CurrentAmountInClip > 0)
+        if (ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
         {
-            nextFire = Time.time + ThisIsTheActiveGun.FireRate;
-            FireGun.MyInstance.FireWeapon();
-        }
-        else if (ThisIsTheActiveGun.CurrentAmountInClip <= 0)
-        {
-            ThisIsTheActiveGun.CurrentAmountInClip = 0;
-            Debug.Log("You are out of Ammo!");
+            if (ThisIsTheActiveWeapon.CurrentAmountInClip > 0)
+            {
+                nextFire = Time.time + ThisIsTheActiveWeapon.FireRate;
+                ActivateWeapons.MyInstance.FireGun();
+            }
+            else if (ThisIsTheActiveWeapon.CurrentAmountInClip <= 0)
+            {
+                ThisIsTheActiveWeapon.CurrentAmountInClip = 0;
+                Debug.Log("You are out of Ammo!");
 
-            //TODO: DISPLAY A "YOU ARE OUT OF AMMO" TOOLTIP. 
+                //TODO: DISPLAY A "YOU ARE OUT OF AMMO" TOOLTIP. 
+            }
+        }
+        else
+        {
+            ActivateWeapons.MyInstance.HitWithMelee();
         }
 
     }
@@ -213,17 +242,17 @@ public class WeaponController : MonoBehaviour
     {
         Debug.Log("Reloading Weapon");
         int reloadAmount = 0;
-        reloadAmount = ThisIsTheActiveGun.ClipSize - ThisIsTheActiveGun.CurrentAmountInClip;
-        ThisIsTheActiveGun.CurrentAmountInClip += reloadAmount;
+        reloadAmount = ThisIsTheActiveWeapon.ClipSize - ThisIsTheActiveWeapon.CurrentAmountInClip;
+        ThisIsTheActiveWeapon.CurrentAmountInClip += reloadAmount;
         AmmoGlobal.CurrentAmmoAmount -= reloadAmount;
-        UpdateAmmoUI(ThisIsTheActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
+        UpdateAmmoUI(ThisIsTheActiveWeapon.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
     }
 
     /// <summary>
     /// You have no space in your gun inventory.
     /// </summary>
     /// <param name="addedGun"></param>
-    public void GunInventFull(Gun addedGun)
+    public void GunInventFull(Weapon addedGun)
     {
         Debug.Log("You inventory is full.");
     }
@@ -232,7 +261,7 @@ public class WeaponController : MonoBehaviour
     /// You already have this weapon. 
     /// </summary>
     /// <param name="addedGun"></param>
-    public void HasWeapon(Gun addedGun)
+    public void HasWeapon(Weapon addedGun)
     {
         foreach (AmmoType ammo in AmmoController.MyInstance.AmmoTypes)
         {
@@ -241,11 +270,11 @@ public class WeaponController : MonoBehaviour
                 int addonAmount = Random.Range(5, addedGun.ClipSize);
 
                 ammo.CurrentAmmoAmount += addonAmount;
-                if (addedGun.GunName == ThisIsTheActiveGun.GunName)
+                if (addedGun.WeaponName == ThisIsTheActiveWeapon.WeaponName)
                 {
-                    UpdateAmmoUI(ThisIsTheActiveGun.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
+                    UpdateAmmoUI(ThisIsTheActiveWeapon.CurrentAmountInClip, AmmoGlobal.CurrentAmmoAmount);
                 }
-                Debug.Log("Added: "+ addonAmount +  " ammo to: " + addedGun.GunName + " " + addedGun.AmmoType);
+                Debug.Log("Added: "+ addonAmount +  " ammo to: " + addedGun.WeaponName + " " + addedGun.AmmoType);
             }
         }
     }
@@ -255,38 +284,37 @@ public class WeaponController : MonoBehaviour
     public void DropWeapon(string name, bool weaponSwap)
     {
         //Take all of the invent spaces for weapons
-        for (int i = 0; i < gunInventoryImages.Length; i++)
+        for (int i = 0; i < weaponInventoryImage.Length; i++)
         {
             //If there is a gun sprite in that space
-            if (gunInventoryImages[i].sprite != null)
+            if (weaponInventoryImage[i].sprite != null)
             {
                 //if the spaces's sprite name matches the button you clicked on
-                if (gunInventoryImages[i].sprite.name == name)
+                if (weaponInventoryImage[i].sprite.name == name)
                 {
                     //foreach gun in your current inventory
-                    foreach (Gun gun in gunList)
+                    foreach (Weapon weapon in weaponList)
                     {
                         //does it match the sprite?
-                        if (gun.GunImage.name == gunInventoryImages[i].sprite.name)
+                        if (weapon.WeaponImage.name == weaponInventoryImage[i].sprite.name)
                         {
                             //is it the active weapon?
 
                             if (weaponSwap != true)
                             {
-                                if (ThisIsTheActiveGun != null && name == ThisIsTheActiveGun.GunImage.name)
+                                if (ThisIsTheActiveWeapon != null && name == ThisIsTheActiveWeapon.WeaponImage.name)
                                 {
                                     UnequipWeapon();
                                 }
-                                gunInventoryImages[i].sprite = null;
-                                gunInventoryButtons[i].onClick.RemoveAllListeners();
+                                weaponInventoryImage[i].sprite = null;
+                                this.weaponInventoryButton[i].onClick.RemoveAllListeners();
 
                             }
                             //unassign it from the inventory
-                            gun.GunPrefab.GetComponent<Animator>().enabled = false;
-                            Instantiate(gun.GunPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position + new Vector3 (0,0.01f,0), Quaternion.Euler(90,0,0), gameWorld);
-                            Debug.Log(PlayerMovement.MyInstance.GroundCheck.transform.position);
-                            gunList.Remove(gun);
-                            Debug.Log("Dropping " + gun.GunName);
+                            weapon.WeaponPrefab.GetComponent<Animator>().enabled = false;
+                            Instantiate(weapon.WeaponPrefab, PlayerMovement.MyInstance.GroundCheck.transform.position + new Vector3 (0,0.01f,0), Quaternion.Euler(90,90,0), gameWorld);
+                            weaponList.Remove(weapon);
+                            Debug.Log("Dropping " + weapon.WeaponName);
                             return;
                         }
                     }
@@ -299,15 +327,14 @@ public class WeaponController : MonoBehaviour
     /// </summary>
     public void UnequipWeapon()
     {
-        FireGun.MyInstance.UninstantiateGun();
+        ActivateWeapons.MyInstance.UninstantiateWeapon();
         activeWeapon.sprite = null;
         activeWeapon.GetComponent<Image>().enabled = false;
         activeWeaponButton.GetComponent<Button>().enabled = false;
 
-        ammoText.text = null;
-        ThisIsTheActiveGun = null;
+        AmmoText.text = null;
+        ThisIsTheActiveWeapon = null;
     }
-
 }
 
 

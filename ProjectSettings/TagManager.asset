@@ -8,6 +8,7 @@ TagManager:
   - ammo
   - Bullet
   - FirePoint
+  - Enemy
   layers:
   - Default
   - TransparentFX

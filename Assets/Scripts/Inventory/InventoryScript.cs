@@ -17,11 +17,11 @@ public class InventoryScript : MonoBehaviour
         }
     }
 
-    public Gun[] Guns { get => guns; set => guns = value; }
+    public Weapon[] Weapons { get => weapons; set => weapons = value; }
     public AmmoObject[] Ammo { get => ammo; set => ammo = value; }
 
     [SerializeField]
-    Gun[] guns;
+    Weapon[] weapons;
     [SerializeField]
     AmmoObject[] ammo;
 

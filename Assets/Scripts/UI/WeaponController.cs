@@ -72,7 +72,7 @@ public class WeaponController : MonoBehaviour
             }
             if (Input.GetButton("Fire1") && IsUIOn == false && Time.time > nextFire)
             {
-                Shoot();
+                AttackWithWeapon();
             }
             if (Input.GetKeyDown(KeyCode.M) && IsUIOn == false)
             {
@@ -212,28 +212,28 @@ public class WeaponController : MonoBehaviour
     }
 
     //Shoots the gun.
-    public void Shoot()
+    public void AttackWithWeapon()
     {
-        if (ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
+        if (ThisIsTheActiveWeapon.WeaponType == Weapon.weaponTypeEnum.Melee)
         {
-            if (ThisIsTheActiveWeapon.CurrentAmountInClip > 0)
-            {
-                nextFire = Time.time + ThisIsTheActiveWeapon.FireRate;
-                ActivateWeapons.MyInstance.FireGun();
-            }
-            else if (ThisIsTheActiveWeapon.CurrentAmountInClip <= 0)
-            {
-                ThisIsTheActiveWeapon.CurrentAmountInClip = 0;
-                Debug.Log("You are out of Ammo!");
-
-                //TODO: DISPLAY A "YOU ARE OUT OF AMMO" TOOLTIP. 
-            }
+            nextFire = Time.time + ThisIsTheActiveWeapon.RateOfAttack;
+            ActivateWeapons.MyInstance.Attack();
+            return;
         }
-        else
+        else if (ThisIsTheActiveWeapon.CurrentAmountInClip > 0 && ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
         {
-            ActivateWeapons.MyInstance.HitWithMelee();
-        }
 
+            nextFire = Time.time + ThisIsTheActiveWeapon.RateOfAttack;
+            ActivateWeapons.MyInstance.Attack();
+
+        }
+        else if (ThisIsTheActiveWeapon.CurrentAmountInClip <= 0 && ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
+        {
+            ThisIsTheActiveWeapon.CurrentAmountInClip = 0;
+            Debug.Log("You are out of Ammo!");
+
+            //TODO: DISPLAY A "YOU ARE OUT OF AMMO" TOOLTIP. 
+        }
     }
     /// <summary>
     /// reloads the currently active weapon.

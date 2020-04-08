@@ -69,8 +69,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            Run();
-            isRunning = true;
+            if (PlayerStats.MyInstance.CurrentStamina > 0)
+            {
+                Run();
+                isRunning = true;
+                PlayerStats.MyInstance.CurrentStamina -= 0.2f;
+            }
+            else
+            {
+                isRunning = false;
+                moveSpeed = originalMoveSpeed;
+            }
         }
         else
         {
@@ -84,6 +93,8 @@ public class PlayerMovement : MonoBehaviour
         while (isRunning)
         {
             moveSpeed = runSpeed;
+            
+
             break;
         }
     }

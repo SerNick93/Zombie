@@ -18,7 +18,9 @@ MonoBehaviour:
   weaponPrefab: {fileID: 8209778943576453950, guid: 98ca4465eb6d0354d82fe7e20f421e8e,
     type: 3}
   damage: 5
-  fireRate: 0
+  attackRange: 1
+  rateOfAttack: 0.75
+  staminaDrain: 0
   gunAccuracy: 0
   clipSize: 0
   ammoObject: {fileID: 0}
@@ -27,3 +29,4 @@ MonoBehaviour:
   maxBulletCount: 0
   muzzleFlashParent: {fileID: 0}
   block: 0
+  meleeStaminDrain: 0

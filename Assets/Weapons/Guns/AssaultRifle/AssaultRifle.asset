@@ -18,12 +18,13 @@ MonoBehaviour:
   weaponPrefab: {fileID: 22823569855202327, guid: 079990d6481f2c24aa1de71457ce382b,
     type: 3}
   damage: 2
-  fireRate: 0.1
+  attackRange: 0
+  rateOfAttack: 0.1
   gunAccuracy: 0.5
   clipSize: 14
   ammoObject: {fileID: 4859966136885951367, guid: d34031718773b3c4191ac6caaffd4d99,
     type: 3}
-  currentAmountInClip: 8921
+  currentAmountInClip: 8884
   normalToScope: 0
   maxBulletCount: 1
   muzzleFlashParent: {fileID: 659708963587402293, guid: 8186daf34297f2f4e9efab181644fa68,

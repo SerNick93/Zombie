@@ -47,15 +47,25 @@ public class ActivateWeapons : MonoBehaviour
                 {
                     if (Input.GetMouseButton(1))
                     {
-                        //The scope is now active.
-                        if (anim == null)
+                        /*Drain the player's stamina depending on the individual weapon's drain rate*/
+                        PlayerStats.MyInstance.CurrentStamina -= 0.2f;
+                        if (PlayerStats.MyInstance.CurrentStamina > 0)
                         {
-                            anim = weaponInstance.GetComponent<Animator>();
-                            anim.enabled = true;
-                        }
-                        WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope = true;
-                        anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope);
+                            //The scope is now active.
+                            if (anim == null)
+                            {
+                                anim = weaponInstance.GetComponent<Animator>();
+                                anim.enabled = true;
+                            }
 
+                            WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope = true;
+                            anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope);
+                        }
+                        else
+                        {
+                            WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope = false;
+                            anim.SetBool("scopeIn", WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope);
+                        }
                     }
                     //The scope is now inactive
                     else if (anim != null)
@@ -95,9 +105,9 @@ public class ActivateWeapons : MonoBehaviour
     /// <summary>
     /// Handles the raycasts of weapons and any particle effects needed. Also updates the Ammo UI.
     /// </summary>
-    public void FireGun()
+    public void Attack()
     {
-        muzzleFlash.Play();
+
         //While the scope is active.
         scale = WeaponController.MyInstance.ThisIsTheActiveWeapon.GunAccuracy;
         while (WeaponController.MyInstance.ThisIsTheActiveWeapon.NormalToScope)
@@ -115,34 +125,56 @@ public class ActivateWeapons : MonoBehaviour
             offset = mainCam.transform.TransformDirection(offset.normalized);
             
             Ray r = new Ray(mainCam.transform.position, offset);
-            if (Physics.Raycast(r, out hit))
-            {
-                enemyController = hit.transform.GetComponent<EnemyController>();
-                Debug.DrawLine(mainCam.transform.position, hit.point);
-                if (enemyController)
-                {
-                    enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveWeapon.Damage / hit.distance * 20);
-                }
-                GameObject impact = Instantiate(impactFlash, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impact, 1f);
-            }
 
+            if (WeaponController.MyInstance.ThisIsTheActiveWeapon.WeaponType != Weapon.weaponTypeEnum.Melee)
+            {
+                muzzleFlash.Play();
+                if (Physics.Raycast(r, out hit))
+                {
+                    enemyController = hit.transform.GetComponent<EnemyController>();
+                    Debug.DrawLine(mainCam.transform.position, hit.point);
+                    if (enemyController)
+                    {
+                        enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveWeapon.Damage / hit.distance * 20);
+                    }
+                    GameObject impact = Instantiate(impactFlash, hit.point, Quaternion.LookRotation(hit.normal));
+                    Destroy(impact, 1f);
+                }
+                WeaponController.MyInstance.ThisIsTheActiveWeapon.CurrentAmountInClip -= 1;
+
+                WeaponController.MyInstance.UpdateAmmoUI
+                    (WeaponController.MyInstance.ThisIsTheActiveWeapon.CurrentAmountInClip,
+                    WeaponController.MyInstance.AmmoGlobal.CurrentAmmoAmount);
+
+            }
+            else
+            {
+                if (PlayerStats.MyInstance.CurrentStamina > 0)
+                {
+                    PlayerStats.MyInstance.CurrentStamina -= 10f;
+                    if (!WeaponController.MyInstance.ThisIsTheActiveWeapon.Block)
+                    {
+                        anim = weaponInstance.GetComponent<Animator>();
+                        anim.Play("Swipe");
+                    }
+                    if (Physics.Raycast(r, out hit, WeaponController.MyInstance.ThisIsTheActiveWeapon.AttackRange))
+                    {
+
+                        enemyController = hit.transform.GetComponent<EnemyController>();
+
+                        if (enemyController)
+                        {
+                            enemyController.TakeDamage(WeaponController.MyInstance.ThisIsTheActiveWeapon.Damage);
+                        }
+
+
+                    }
+                }
+            }
         }
            
-        WeaponController.MyInstance.ThisIsTheActiveWeapon.CurrentAmountInClip -= 1;
+    }
 
-        WeaponController.MyInstance.UpdateAmmoUI
-                (WeaponController.MyInstance.ThisIsTheActiveWeapon.CurrentAmountInClip,
-                WeaponController.MyInstance.AmmoGlobal.CurrentAmmoAmount);
-    }
-    public void HitWithMelee()
-    {
-        anim = weaponInstance.GetComponent<Animator>();
-        if (!WeaponController.MyInstance.ThisIsTheActiveWeapon.Block)
-        {
-            anim.Play("Swipe");
-        }
-    }
 
     public void InstantiateWeapon(Weapon activeWeapon)
     {

@@ -29,6 +29,10 @@ public class UIController : MonoBehaviour
     {
         interactionText.text = "Press E to pickup the " + weapon.WeaponName + ".";
     }
+    public void ItemPickup(Item item)
+    {
+        interactionText.text = "Press E to Pickup the " + item.ItemName + ".";
+    }
     public void AmmoPickup(string ammoName)
     {
         interactionText.text = "Press E to pickup the " + ammoName + ".";

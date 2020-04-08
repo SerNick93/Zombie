@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Weapon", menuName = "Weapon", order = 99)]
+[CreateAssetMenu(fileName = "Weapon", menuName = "ScriptableObjects/Weapon", order = 99)]
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Animation))]
 public class Weapon : ScriptableObject
@@ -21,6 +21,13 @@ public class Weapon : ScriptableObject
     private GameObject weaponPrefab;
     [SerializeField]
     private float damage;
+    [SerializeField]
+    private float attackRange;
+    [SerializeField]
+    private float rateOfAttack;
+    //The rate that the player's stamina drains when they are using the aim function
+    [SerializeField]
+    private float staminaDrain;
 
 
     [Header("Gun Variables")]
@@ -41,12 +48,15 @@ public class Weapon : ScriptableObject
     private int maxBulletCount;
     [SerializeField]
     private ParticleSystem muzzleFlashParent;
-    [SerializeField]
-    private float fireRate;
+
+
     [Header("Melee Variables")]
     [SerializeField]
-    [Tooltip("Is the weapon in scope mode?")]
+    [Tooltip("Is the weapon blocking?")]
     private bool block;
+    [Tooltip("The amount of stamin drained per attack")]
+    [SerializeField]
+    private float meleeStaminDrain;
 
     //[Header("Granade Variables")]
 
@@ -57,6 +67,9 @@ public class Weapon : ScriptableObject
     public GameObject WeaponPrefab { get => weaponPrefab; set => weaponPrefab = value; }
     public float Damage { get => damage; set => damage = value; }
     public weaponTypeEnum WeaponType { get => weaponType; set => weaponType = value; }
+    public float RateOfAttack { get => rateOfAttack; set => rateOfAttack = value; }
+    public float StaminaDrain { get => staminaDrain; set => staminaDrain = value; }
+
 
 
     //GUN ACCESSORS
@@ -67,11 +80,12 @@ public class Weapon : ScriptableObject
     public bool NormalToScope { get => normalToScope; set => normalToScope = value; }
     public int MaxBulletCount { get => maxBulletCount; set => maxBulletCount = value; }
     public ParticleSystem MuzzleFlashParent { get => muzzleFlashParent; set => muzzleFlashParent = value; }
-    public float FireRate { get => fireRate; set => fireRate = value; }
 
 
     //MELEE ACCESSORS
     public bool Block { get => block; set => block = value; }
+    public float AttackRange { get => attackRange; set => attackRange = value; }
+    public float MeleeStaminDrain { get => meleeStaminDrain; set => meleeStaminDrain = value; }
 
     //GRANADE ACCESSORS
 

@@ -18,3 +18,4 @@ MonoBehaviour:
   itemImage: {fileID: 21300000, guid: 26b55dd0584dda346ad72fa9fe1037c6, type: 3}
   itemDescription: A rusty olf key
   itemWeight: 1
+  isStackable: 0

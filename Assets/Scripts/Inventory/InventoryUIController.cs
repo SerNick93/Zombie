@@ -37,7 +37,6 @@ public class InventoryUIController : MonoBehaviour
 
     public void UpdateUIElements(Item hoverItem)
     {
-        Debug.Log("Hover Over: " + hoverItem);
         itemName.text = hoverItem.ItemName;
         itemImage.enabled = true;
         itemImage.sprite = hoverItem.ItemImage;
@@ -45,7 +44,7 @@ public class InventoryUIController : MonoBehaviour
         string itemDesFormatting = string.Format("{0} \n\n{1}", hoverItem.ItemDescription, "Item Weight: " + hoverItem.ItemWeight.ToString() );
         itemDescription.text = itemDesFormatting;
     }
-    public void RemoveUIElements(Item hoverItem)
+    public void RemoveUIElements()
     {
         itemName.text = null;
         itemImage.sprite = null;

@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: HealthItem
   m_EditorClassIdentifier: 
   itemName: Health item
-  itemPrefab: {fileID: 7849231898002302725, guid: 40bdd88cf2041d843af10ad219407010,
+  itemPrefab: {fileID: 1511491156024365707, guid: 89ae56343e586d84b8d09a16a52a7df6,
     type: 3}
   itemImage: {fileID: 21300000, guid: b466aa8d42e71f240b6be27cf61ec50c, type: 3}
   itemDescription: A strong Health potion, healing 50 health.
   itemWeight: 2
+  isStackable: 1
   healAmount: 20

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEditor;
+
 public class InventoryController : MonoBehaviour
 {
     public static InventoryController myInstance;
@@ -19,8 +20,20 @@ public class InventoryController : MonoBehaviour
         }
     }
 
-    public delegate void OnItemChanged();
-    public OnItemChanged onItemChangedCallback;
+    //Update Stack Delegate
+    public delegate void OnItemChangeStack(Item item);
+    public OnItemChangeStack OnItemChangeStackCallback;
+
+    public delegate void OnItemDropToFloor(Item item);
+    public OnItemDropToFloor OnItemDropToFloorCallback;
+
+    public delegate void OnItemDestroyItem(Item item);
+    public OnItemDestroyItem OnItemDestroyitemCallback;
+
+    public delegate void OnAddItemToHotbar(Item item);
+    public OnAddItemToHotbar OnAddItemToHotbarCallback;
+
+
 
     [SerializeField]
     CanvasGroup cg;
@@ -30,15 +43,14 @@ public class InventoryController : MonoBehaviour
     Transform itemListingParent;
 
     [SerializeField]
-    public List<itemListing> itemListings = new List<itemListing>();
+    public List<ItemListing> itemListings = new List<ItemListing>();
 
     [SerializeField]
-    itemListing itemListingPrefab;
-    [SerializeField]
-    private Stack<Item> itemStack = new Stack<Item>();
+    ItemListing itemListingPrefab;
+
     bool itemFound = false;
 
-    itemListing ItemListing;
+    ItemListing ItemListing;
 
     [SerializeField]
     private List<Item> items = new List<Item>();
@@ -79,75 +91,76 @@ public class InventoryController : MonoBehaviour
     }
 
 
-    public bool AddItem (Item item)
+    public bool AddItem(Item item)
     {
-        //Bool for when weight limit id applied
-        
-        if (onItemChangedCallback != null)
-            onItemChangedCallback.Invoke();
-
         if (itemWeight + item.ItemWeight > PlayerStats.MyInstance.CarryWeight)
         {
-            Debug.Log("You're inventory is full");
+            Debug.Log("You cannot carry anymore.");
             return false;
         }
+        //Add to a pre existing stack
         else
         {
-            foreach (itemListing listing in itemListings)
+            foreach (ItemListing listing in itemListings)
             {
-                if (listing.thisItemListing == item)
+                if (listing.thisListedItem == item)
                 {
-                    Debug.Log("True");
-
                     itemWeight = itemWeight + item.ItemWeight;
                     WeightCheck();
 
-                    listing.GetComponent<itemListing>().AddItem(item);
+                    listing.GetComponent<ItemListing>().InitStack(item);
+
                     itemFound = true;
                     break;
                 }
             }
-
             if (itemFound == false)
             {
-
-                itemListing instancedItemListingPrefab = Instantiate(itemListingPrefab, itemListingParent);
-
-                itemWeight = itemWeight + item.ItemWeight;
-                WeightCheck();
-
-
-                items.Add(item);
-                //Instantiate the listing if item not found.
-                itemListings.Add(instancedItemListingPrefab);
-
+                itemHasNotBeenFound(item);
                 ////Update the listing
-                instancedItemListingPrefab.GetComponent<itemListing>().AddItem(item);
             }
             else
                 itemFound = false;
-            
         }
         return true;
 
     }
+
+
+
+    public void itemHasNotBeenFound(Item item)
+    {
+        ItemListing instancedItemListingPrefab = Instantiate(itemListingPrefab, itemListingParent);
+
+        Item instancedItem = item;
+        itemWeight = itemWeight + instancedItem.ItemWeight;
+        WeightCheck();
+
+        items.Add(instancedItem);
+        //Instantiate the listing if item not found.
+        itemListings.Add(instancedItemListingPrefab);
+
+        instancedItemListingPrefab.GetComponent<ItemListing>().InitItemListing(instancedItem);
+
+    }
+
+    //Weight management
     public void RemoveWeight(Item item)
     {
         itemWeight = itemWeight - item.ItemWeight;
         WeightCheck();
 
     }
-    public void RemoveItem(Item item, itemListing itemListing)
+    //remove item and listing from their lists.
+    public void RemoveItem(Item item, ItemListing itemListing)
     {
-        items.Remove(item);
-        itemListings.Remove(itemListing);
+        Item instancedItem = item;
+        ItemListing instancedItemListing = itemListing;
 
-        itemWeight = itemWeight - item.ItemWeight;
-        WeightCheck();
 
-        if (onItemChangedCallback != null)
-            onItemChangedCallback.Invoke();
-
+        items.Remove(instancedItem);
+        itemListings.Remove(instancedItemListing);
     }
+    
 
 }

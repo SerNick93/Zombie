@@ -3,6 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+/*WALK
+ *      WALK STRAIGHT - Z > 0
+ *      WALK BACKWARDS - Z < 0
+ *      STRAFE LEFT X < 0
+ *      STRAFE RIGHT X > 0
+ *RUN
+ *      RUN STRAIGHT
+ *      RUN BACKWARDS
+ *      RUN STRAFE LEFT
+ *      RUN STRAFE RIGHT
+ *      
+ * 
+ * JUMP
+ *      JUMP BACKWARDS.
+ *
+ *      
+ * 
+ * 
+ */
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -23,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
     [SerializeField]
-    private float moveSpeed = 10f;
+    private float walkSpeed = 4f;
     private float originalMoveSpeed = 4f;
     
 
@@ -45,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     float jumpHeight;
     [SerializeField]
-    bool isWalking, isRunning, isCrouching;
+    bool isIdle, isWalking, isRunning, isCrouching;
     [SerializeField]
     Animator anim;
     AnimatorClipInfo[] animClipInfo;
@@ -55,127 +74,162 @@ public class PlayerMovement : MonoBehaviour
     }
     private void LateUpdate()
     {
-        float walkDirection = 0;
+        //GroundingControlls
         isGrounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
 
-        if (!isGrounded)
-        {
-
-            if (velocity.y < 0)
-            {
-                //velocity.y = -2f;
-            }
-        }
-        /*WALK
-         *      WALK STRAIGHT - Z > 0
-         *      WALK BACKWARDS - Z < 0
-         *      STRAFE LEFT X < 0
-         *      STRAFE RIGHT X > 0
-         *RUN
-         *      RUN STRAIGHT
-         *      RUN BACKWARDS
-         *      RUN STRAFE LEFT
-         *      RUN STRAFE RIGHT
-         *      
-         * 
-         * JUMP
-         *      CHANGE THE BOOL TO A TRIGGER, SO IT DOESN'T HAVE ANY CONDITIONS TO MEET
-         *      USE INTERUPTION SOURCE TO GET RID OF SOME OF THE INCONSISTNCIES OF
-         *      THE ANIMATION JOINS
-         * 
-         * 
-         */
-
-
-
-
+        //Movement Controlls
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * moveSpeed * Time.deltaTime);
 
-        //Set strafing speed.
-        if (x > 0)
+        if (isGrounded)
         {
-            anim.SetBool("isStrafingRight", true);
-            //Strafe Right
-        }
-        else if(x < 0)
-        { 
-            anim.SetBool("isStrafingLeft", true);
-            //Straftr Left
-        }
-        else if (x == 0)
-        {
-            anim.SetBool("isStrafingLeft", false);
-            anim.SetBool("isStrafingRight", false);
-        }
-        if (x > 0 && isRunning)
-        {
-            anim.SetBool("isRunning", true); 
-            //Straft Right + Run
-        }
-        if (x < 0 && isRunning)
-        {
-            Debug.Log("Runstrafe left");
-            anim.SetBool("isRunning", true);
+            if (z > 0 || x > 0 && !isRunning)
+            {   //Walk Forwards
+                isWalking = true;
+                isIdle = false;
+                anim.SetBool("isWalking", true);
+                anim.SetBool("isWalkingBackwards", false);
+                anim.SetBool("isIdle", false);
+            }
+            else if (z < 0 || x < 0 && !isRunning)
+            {   //Walk backwards
+                anim.SetBool("isWalkingBackwards", true);
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isIdle", false);
 
-            //Straft Left + Run
+                controller.Move(move * crouchSpeed * Time.deltaTime);
+            }
+            else if (z == 0 && x == 0)
+            {   //Stop Walking
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isWalkingBackwards", false);
+                anim.SetBool("isIdle", true);
+            }
+
+            if (isWalking)
+            {
+                if (x > 0)
+                {   //Walk Strafe Right
+                    anim.SetBool("isStrafingRight", true);
+                    anim.SetBool("isStrafingLeft", false);
+                    anim.SetBool("isIdle", false);
+                }
+                else if (x < 0)
+                {   //walkSpeed Strafe Left
+                    anim.SetBool("isStrafingLeft", true);
+                    anim.SetBool("isStrafingRight", false);
+                    anim.SetBool("isIdle", false);
+                }
+                controller.Move(move * walkSpeed * Time.deltaTime);
+
+
+            }
+
+            if (isRunning)
+            {
+                if (x > 0)
+                {   //Run Strafe Right
+                    anim.SetBool("isStrafingRight", true);
+                    anim.SetBool("isStrafingLeft", false);
+                    anim.SetBool("isRunning", true);
+                    anim.SetBool("isIdle", false);
+                }
+                else if (x < 0)
+                {   //Run Strafe Left
+                    anim.SetBool("isStrafingLeft", true);
+                    anim.SetBool("isStrafingRight", false);
+                    anim.SetBool("isRunning", true);
+                    anim.SetBool("isIdle", false);
+                }
+                else
+                {   //Stop Strafing.
+                    anim.SetBool("isStrafingRight", false);
+                    anim.SetBool("isStrafingLeft", false);
+                }
+            }
+
+            if (isCrouching)
+            {
+                if (z > 0)
+                {   //Crouch Walk Forwards
+                    anim.SetBool("isCrouching", true);
+                    anim.SetBool("isWalking", true);
+                }
+                else if (z < 0)
+                {   //Crouch Walk Backwards
+                    anim.SetBool("isWalkingBackwards", true);
+                    anim.SetBool("isWalking", false);
+                }
+                else if (x > 0)
+                {   //Crouch Walk Right
+                    anim.SetBool("isCrouching", true);
+                    anim.SetBool("isWalking", true);
+                    anim.SetBool("isStrafingRight", true);
+                    anim.SetBool("isStrafingLeft", false);
+
+                }
+                else if (x < 0)
+                {   //Crouch Walk Left
+                    anim.SetBool("isCrouching", true);
+                    anim.SetBool("isWalking", true);
+                    anim.SetBool("isStrafingLeft", true);
+                    anim.SetBool("isStrafingRight", false);
+
+                }
+                else
+                {
+                    //anim.SetBool("isWalking", false);
+                }
+            }
+
         }
 
-        if (z > 0 && isGrounded)
-        {
-            isWalking = true;
-            anim.SetBool("isWalking", true);
-        }
-        else
-        {
-            isWalking = false;
-            anim.SetBool("isWalking", false);
-        }
 
         if (Input.GetButtonDown("Jump"))
-        {
-            /*If Collider in front finds an object with tag 
-             * climb, use the climb animation instad.
-             * Get the height of the wall to detemine which climb is needed. 
-             *
-             * 
-             */
-             StartCoroutine(Jump());
-        }
-
-        
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            isRunning = true;
-
-            if (PlayerStats.MyInstance.CurrentStamina > 0 && isWalking)
+        {           
+            if (isIdle)
             {
-                Run();
-                PlayerStats.MyInstance.CurrentStamina -= 0.2f;
+                anim.SetTrigger("isJumping");
             }
-            else
+            else if(isWalking)
             {
-                //anim.SetBool("isRunning", false);
-                //isRunning = false;
-                moveSpeed = originalMoveSpeed;
+                anim.SetTrigger("isJumping");
+            }
+            else if (isRunning)
+            {
+                anim.SetTrigger("isJumping");
+            }
+            else if(isCrouching)
+            {
+                //Jumping from crouching position?
             }
         }
-        else
+
+        if (Input.GetKey(KeyCode.LeftShift) && !isCrouching)
         {
-            anim.SetBool("isRunning", false);
+            if (PlayerStats.MyInstance.CurrentStamina > 0)
+            {
+                isRunning = true;
+                if (isWalking)
+                {
+                    Run(move);
+                }
+            }
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift) && !isCrouching)
+        {
             isRunning = false;
-            moveSpeed = originalMoveSpeed;
+            isWalking = true;
+            anim.SetBool("isRunning", false);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             if (!isCrouching)
             {
-                StartCoroutine(Crouch());
+                StartCoroutine(Crouch(move));
                 isCrouching = true;
             }
             else
@@ -184,59 +238,33 @@ public class PlayerMovement : MonoBehaviour
                 isCrouching = false;
             }
         }
+        
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.tag == "Climb")
-        {
-        }
-    }
-
-    public void Run()
+    public void Run(Vector3 move)
     {  
         while (isRunning)
         {
-            Debug.Log(moveSpeed);
-            moveSpeed = runSpeed;
+            PlayerStats.MyInstance.CurrentStamina -= 0.2f;
+            isWalking = false;
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isIdle", false);
             anim.SetBool("isRunning", true);
+            controller.Move(move * runSpeed * Time.deltaTime);
+
             break;
         }
     }
 
-    public IEnumerator Crouch()
+    public IEnumerator Crouch(Vector3 move)
     {
-        moveSpeed = crouchSpeed;
         anim.SetBool("isCrouching", true);
         yield return new WaitForSeconds(.6f);
-        controller.center = new Vector3(0, Mathf.Lerp(.73f,1.2f,1f),0f);
     }
     public IEnumerator StopCrouch()
     {
         anim.SetBool("isCrouching", false);
-        moveSpeed = originalMoveSpeed;
         yield return new WaitForSeconds(1.5f);
-        controller.center = new Vector3(0, Mathf.Lerp(1.2f, .73f,1f),0f);
 
     }
-    IEnumerator Jump()
-    {
-
-        //velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        //velocity.y += gravity * Time.deltaTime;
-        //controller.Move(velocity * Time.deltaTime);
-        anim.SetBool("isJumping", true);
-        if (isCrouching)
-        {
-            controller.center = new Vector3(0, Mathf.Lerp(1.2f, .73f, 1f), 0f);
-        }
-        yield return new WaitForSeconds(2.15f);
-        if (isCrouching)
-        {
-            anim.SetBool("isCrouching", false);
-        }
-
-        anim.SetBool("isJumping", false);
-    }
-
 }
